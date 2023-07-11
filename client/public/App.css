@@ -1,0 +1,235 @@
+@import url(
+'https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+@import url(./reset.css);
+
+@keyframes op-to-bottom {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+} 
+
+@keyframes op-to-top {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.container {
+  max-width: 1270px;
+  padding: 30px;
+  margin: 0 auto;
+}
+
+body {
+  background: url(./img/bg.png) no-repeat;
+  background-size: cover;
+}
+
+.App {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 30px;
+  margin-top: 30px;
+}
+  
+h1 {
+  font-family: 'Lobster', cursive;
+  font-size: 50px;
+  color: #ffffff;
+  margin-bottom: 30px;
+  display: flex;
+  column-gap: 30px;
+}
+
+h1::before {
+  content: "";
+  background: url(./img/lebed.png) no-repeat;
+  width: 35px;
+  background-size: 35px;
+}
+  
+.draw-area {
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #808080;
+  position: relative;
+  background-color: rgb(218, 218, 218);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+  
+.Menu {
+  position:sticky; 
+  bottom:0;
+  padding: 10px;
+  max-width: 650px;
+  gap: 30px;
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: space-evenly;
+  border-radius: 5px;
+  align-items: center;
+  background-color: #a3a3a32d;
+  margin: auto;
+  margin-top: 10px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body::-webkit-scrollbar,
+.box__colors::-webkit-scrollbar {
+  width: 0px;
+  background: rgba(255, 255, 255, 0.0);
+}
+
+.box__colors {
+  max-width: 600px;
+  max-height: 400px;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 30px;
+  margin: 0 auto;
+  overflow-y: auto;
+  gap: 20px;
+  background-color: #fff;
+  margin-top: 100px;
+  border-radius: 10px;
+}
+
+.registration__form {
+  animation: op-to-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+.box__inputs {
+  background-color: #2d2c31;
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 10px;
+  padding: 0px 20px 0px 20px;
+}
+
+.box__inputs::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 100px;
+  background: linear-gradient(0deg, rgba(255,255,255,1) 50%, rgba(45,44,49,1) 50%);
+  margin-left: 15.5%;
+}
+
+.form__reg input {
+  background-color: rgb(233, 231, 231);
+  height: 40px;
+  font-size: 18px;
+  padding: 20px;
+  border-radius: 10px;
+}
+.reg__bttn {
+  background-color: rgb(86, 192, 53);
+  height: 50px;
+  border-radius: 5px;
+  font-weight: 700;
+  padding: 0px 10%;
+  margin: 0 auto;
+  
+}
+.form__reg a {
+  color: rgb(252, 255, 82);
+  margin: 0 auto;
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+.form__reg {
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+.reg__page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+.box__pssword {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inpt__password {
+  width: 400px;
+}
+
+.box__color {
+  border-radius: 5px;
+  background-color: rgb(199, 199, 199);
+  padding: 10px;
+}
+
+.button__view {
+  width: 40px;
+  position: absolute;
+  height: 40px;
+  border-radius: 50%;
+  right: 0;
+  background: url(./img/eye.png) no-repeat;
+  background-position: center;
+  background-size: 20px;
+}
+
+.loading {
+  text-align: center;
+  margin: 0 auto;
+  animation: op-to-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+.user__profile {
+  width: 50px;
+  height: 50px;
+  background-color: #fff;
+  border-radius: 50%;
+}
+
+.container__menu {
+  display: flex;
+  align-items: center;
+  column-gap: 30px;
+}
+
+.container__menu::after {
+  content: "";
+  height: 30px;
+  border: 1px solid #000;
+}
+
+.scroll-of-drawing {
+  background-color: rgb(197, 255, 142);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.menu-fixed {
+  position: fixed;
+  top: 0;
+}
+
+.what {
+  color: rgb(3, 0, 180);
+}
