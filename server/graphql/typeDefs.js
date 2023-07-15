@@ -7,6 +7,7 @@ module.exports = gql`
         tokenJWT: String
         color: String
         level: Int
+        guild: String
     }
 
     type Guild {
@@ -37,5 +38,6 @@ module.exports = gql`
         deleteUser(ID: ID!): Boolean
         editUser(ID: ID!, userInput: UserInput): Boolean
         createGuild(guildInput: GuildInput, ownerId: String): Guild!
+        deleteGuild(ID: ID!): Boolean
     }
 `

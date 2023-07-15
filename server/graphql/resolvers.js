@@ -46,25 +46,32 @@ const resolvers = {
     },
 
     async createGuild(_, { guildInput: { name }, ownerId }) {
-
-        const createdGuild = new Guild({
-          name: name,
-          ownerId: ownerId,
-          level: 0
-        });
-      
+      const createdGuild = new Guild({
+        name: name,
+        ownerId: ownerId,
+        level: 0,
+      });
+    
+      const user = await User.findById(ownerId);
+    
+      if (user.guild !== "") {
+        throw new Error(`user ${user.name} has a guild!`);
+      } else {
         const res = await createdGuild.save();
-      
-        const user = await User.findById(ownerId);
-      
+    
         user.guild = res.id;
         await user.save();
-      
+    
         return {
           id: res.id,
-          ...res._doc
+          ...res._doc,
         };
+      }
     },
+    
+    async deleteGuild(_, { ID }) {
+      
+    }
   },
 };
 

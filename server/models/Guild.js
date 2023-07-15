@@ -4,7 +4,7 @@ const guildSchema = new Schema({
     name: String,
     ownerId: String,
     membersId: [],
-    level: Number
+    level: Number,
 });
 
 module.exports = model('Guild', guildSchema);
