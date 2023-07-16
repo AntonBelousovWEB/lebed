@@ -27,6 +27,11 @@ module.exports = gql`
         name: String
     }
 
+    input AddMemberInput {
+        userId: ID!
+        guildId: ID!
+    }          
+
     type Query {
         users(ID: ID!): User!
         getUser(amount: Int): [User]
@@ -39,5 +44,6 @@ module.exports = gql`
         editUser(ID: ID!, userInput: UserInput): Boolean
         createGuild(guildInput: GuildInput, ownerId: String): Guild!
         deleteGuild(ID: ID!, ownerId: String): Boolean
+        addMemberGuild(input: AddMemberInput!): Guild!
     }
 `

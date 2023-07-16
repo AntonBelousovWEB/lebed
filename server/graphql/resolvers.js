@@ -76,6 +76,27 @@ const resolvers = {
 
       return deletedCount === 1;
     },
+
+    async addMemberGuild(_, { input: { userId, guildId } }) {
+      const user = await User.findById(userId);
+      const guild = await Guild.findById(guildId);
+    
+      if (!user || !guild) {
+        throw new Error("User or guild not found");
+      }
+    
+      if (user.guild !== "") {
+        throw new Error("User is already a member of a guild");
+      }
+    
+      guild.membersId.push(userId);
+      await guild.save();
+    
+      user.guild = guildId;
+      await user.save();
+    
+      return guild;
+    },    
   },
 };
 
