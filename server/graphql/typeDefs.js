@@ -38,6 +38,6 @@ module.exports = gql`
         deleteUser(ID: ID!): Boolean
         editUser(ID: ID!, userInput: UserInput): Boolean
         createGuild(guildInput: GuildInput, ownerId: String): Guild!
-        deleteGuild(ID: ID!): Boolean
+        deleteGuild(ID: ID!, ownerId: String): Boolean
     }
 `
