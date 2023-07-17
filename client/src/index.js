@@ -9,7 +9,7 @@ import {
 } from "@apollo/client";
 
 const link = createHttpLink({
-  uri: "http://localhost:3000"
+  uri: process.env.REACT_APP_SERVER_LINK
 });
 
 const client = new ApolloClient({

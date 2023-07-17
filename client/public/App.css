@@ -233,3 +233,12 @@ body::-webkit-scrollbar,
 .what {
   color: rgb(3, 0, 180);
 }
+
+.Errors {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  color: rgb(209, 9, 9);
+  font-family: 'Montserrat', sans-serif;
+  background-color: rgba(255, 255, 255, 0.5);
+}

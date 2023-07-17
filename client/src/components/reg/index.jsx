@@ -1,25 +1,19 @@
 import React from "react";
 import axios from "axios";
-import { gql, useQuery, useMutation } from '@apollo/client';
-
-const GET_USERS = gql `
-  query GetUser {
-    getUser {
-      name
-      color
-      level
-      guild
-    }
-  }
-`
+import { REGISTER_USER, LOGIN_USER } from '../../mutation/user';
+import { useMutation } from '@apollo/client';
+import { Link } from "react-router-dom";
 
 export function Reg() {
   const [datas, setDatas] = React.useState(null);
   const [selectedColor, setSelectedColor] = React.useState(null);
   const [view, setView] = React.useState(false);
+  const [error, setError] = React.useState("");
 
-  const { loading, error, data } = useQuery(GET_USERS);
-  
+  const [name, setName] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  const [regUser] = useMutation(REGISTER_USER);
 
   React.useEffect(() => {
       axios
@@ -32,9 +26,25 @@ export function Reg() {
         });
   }, []);
 
-  if(loading) return null
-  if(error) return "Error: " + error;
-  console.log(data);
+  const registerUser = (e) => {
+    e.preventDefault();
+  
+    regUser({
+      variables: {
+        registerUserInput: {
+          color: selectedColor.hex,
+          name, 
+          password,
+        }
+      }
+    }).then(({data}) => {
+      console.log(data);
+      setName("");
+      setPassword("");
+    }).catch((err) => {
+      setError(err);
+    });
+  }  
 
   // Функция для проверки яркости цвета
   const isTooBright = (hexColor) => {
@@ -56,13 +66,20 @@ export function Reg() {
     <div className="reg__page">
       {datas ? (
         <div className="registration__form">
+          <div className="Errors">{error.toString()}</div>
           <div className="box__inputs">
             <form className="form__reg">
-              <input style={{
-                marginTop: "20px"
-              }} type="text" placeholder="name" />
+              <input 
+                style={{
+                  marginTop: "20px"
+                }} 
+                type="text" 
+                placeholder="name"
+                onChange={e => setName(e.target.value)}
+              />
               <div className="box__pssword">
                 <input
+                  onChange={e => setPassword(e.target.value)}
                   className="inpt__password"
                   type={view ? "text" : "password"}
                   placeholder="password"
@@ -75,8 +92,8 @@ export function Reg() {
                   className="button__view"
                 ></button>
               </div>
-              <button className="reg__bttn">Register</button>
-              <a href="https://">Sign in</a>
+              <button onClick={(e) => registerUser(e)} className="reg__bttn">Register</button>
+              <Link to="/auth">Sign in</Link>
             </form>
           </div>
           <div className="box__colors">
