@@ -1,5 +1,8 @@
 import React from "react";
 import axios from "axios";
+import { gql, useQuery } from '@apollo/client';
+
+
 
 export function Reg() {
   const [data, setData] = React.useState(null);
