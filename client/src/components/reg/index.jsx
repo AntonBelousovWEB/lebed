@@ -1,25 +1,40 @@
 import React from "react";
 import axios from "axios";
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery, useMutation } from '@apollo/client';
 
-
+const GET_USERS = gql `
+  query GetUser {
+    getUser {
+      name
+      color
+      level
+      guild
+    }
+  }
+`
 
 export function Reg() {
-  const [data, setData] = React.useState(null);
+  const [datas, setDatas] = React.useState(null);
   const [selectedColor, setSelectedColor] = React.useState(null);
   const [view, setView] = React.useState(false);
+
+  const { loading, error, data } = useQuery(GET_USERS);
+  
 
   React.useEffect(() => {
       axios
         .get(process.env.REACT_APP_COLOR_LINK)
         .then((response) => {
           setTimeout(() => {
-            setData(response.data);
+            setDatas(response.data);
             setSelectedColor(response.data[0]);
-            console.log("hello");
           }, 500);
         });
   }, []);
+
+  if(loading) return null
+  if(error) return "Error: " + error;
+  console.log(data);
 
   // Функция для проверки яркости цвета
   const isTooBright = (hexColor) => {
@@ -39,7 +54,7 @@ export function Reg() {
 
   return (
     <div className="reg__page">
-      {data ? (
+      {datas ? (
         <div className="registration__form">
           <div className="box__inputs">
             <form className="form__reg">
@@ -65,8 +80,8 @@ export function Reg() {
             </form>
           </div>
           <div className="box__colors">
-            {data &&
-              data.map((color) => {
+            {datas &&
+              datas.map((color) => {
                 if (isTooBright(color.hex)) {
                   return null;
                 }

@@ -58,31 +58,31 @@ const resolvers = {
       };
     },    
 
-    loginUser: async(_, { loginUserInput: { name, password } }) => {
-      const user = await User.findOne(name);
-
-      if(user && (await bcrypt.compare(password, user.model))) {
+    loginUser: async (_, { loginUserInput: { name, password } }) => {
+      const user = await User.findOne({ name });
+    
+      if (user && (await bcrypt.compare(password, user.password))) {
         const token = jwt.sign(
           {
-            user_id: createdUser._id,
-            color,
+            user_id: user._id,
+            color: user.color,
           },
           "UNSAFE_STRING",
           {
             expiresIn: "2h",
           }
         );
-
+    
         user.tokenJWT = token;
-
+    
         return {
           id: user.id,
-          ...user._doc
-        }
+          ...user._doc,
+        };
       } else {
-        throw new Error("Incorect password!")
+        throw new Error("Incorrect password!");
       }
-    },
+    },    
 
     deleteUser: async (_, { ID }) => {
       const { deletedCount } = await User.deleteOne({ _id: ID });
