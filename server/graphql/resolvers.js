@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const Guild = require('../models/Guild');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const resolvers = {
   Query: {
@@ -14,35 +16,77 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUser: async (_, { userInput: { name, password, color } }) => {
+    registerUser: async (_, { registerUserInput: { name, password, color } }) => {
+      const existingUser = await User.findOne().or([{ name }, { color }]);
+    
+      if (existingUser) {
+        if (existingUser.name === name) {
+          throw new Error(`The name ${name} is taken!`);
+        } else {
+          throw new Error(`The color ${color} is taken!`);
+        }
+      }
+    
+      const encryptedPassword = await bcrypt.hash(password, 10);
+    
       const createdUser = new User({
         name,
-        password,
-        tokenJWT: password,
+        password: encryptedPassword,
         color,
         level: 0,
         guild: "",
       });
-
+    
+      const token = jwt.sign(
+        {
+          user_id: createdUser._id,
+          color,
+        },
+        "UNSAFE_STRING",
+        {
+          expiresIn: "2h",
+        }
+      );
+    
+      createdUser.tokenJWT = token;
+    
       const res = await createdUser.save();
-
+    
       return {
         id: res.id,
         ...res._doc,
       };
+    },    
+
+    loginUser: async(_, { loginUserInput: { name, password } }) => {
+      const user = await User.findOne(name);
+
+      if(user && (await bcrypt.compare(password, user.model))) {
+        const token = jwt.sign(
+          {
+            user_id: createdUser._id,
+            color,
+          },
+          "UNSAFE_STRING",
+          {
+            expiresIn: "2h",
+          }
+        );
+
+        user.tokenJWT = token;
+
+        return {
+          id: user.id,
+          ...user._doc
+        }
+      } else {
+        throw new Error("Incorect password!")
+      }
     },
 
     deleteUser: async (_, { ID }) => {
       const { deletedCount } = await User.deleteOne({ _id: ID });
       return deletedCount === 1;
-    },
-
-    editUser: async (_, { ID, userInput: { name, password } }) => {
-      const { modifiedCount } = await User.updateOne(
-        { _id: ID },
-        { name, password }
-      );
-      return modifiedCount === 1;
     },
 
     createGuild: async (_, { guildInput: { name }, ownerId }) => {

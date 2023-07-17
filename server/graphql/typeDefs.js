@@ -17,10 +17,15 @@ module.exports = gql`
         level: Int
     }
 
-    input UserInput {
+    input RegisterUserInput {
         name: String
         password: String
         color: String
+    }
+
+    input LoginUserInput {
+        name: String
+        password: String
     }
 
     input GuildInput {
@@ -39,9 +44,9 @@ module.exports = gql`
     }
 
     type Mutation {
-        createUser(userInput: UserInput): User!
+        registerUser(registerUserInput: RegisterUserInput): User!
+        loginUser(loginUserInput: LoginUserInput): User!
         deleteUser(ID: ID!): Boolean
-        editUser(ID: ID!, userInput: UserInput): Boolean
         createGuild(guildInput: GuildInput, ownerId: String): Guild!
         deleteGuild(ID: ID!, ownerId: String): Boolean
         addMemberGuild(input: AddMemberInput!): Guild!
