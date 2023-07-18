@@ -66,6 +66,7 @@ const resolvers = {
           {
             user_id: user._id,
             color: user.color,
+            name: user.name
           },
           "UNSAFE_STRING",
           {
@@ -92,7 +93,7 @@ const resolvers = {
     createGuild: async (_, { guildInput: { name }, ownerId }) => {
       const user = await User.findById(ownerId);
 
-      if (user.guild !== "") {
+      if (!user.guild) {
         throw new Error(`User ${user.name} already has a guild!`);
       }
 
@@ -129,7 +130,7 @@ const resolvers = {
         throw new Error("User or guild not found");
       }
     
-      if (user.guild !== "") {
+      if (!user.guild) {
         throw new Error("User is already a member of a guild");
       }
     

@@ -7,6 +7,7 @@ export const REGISTER_USER = gql `
             guild
             level
             name
+            tokenJWT
         }
     }
 `

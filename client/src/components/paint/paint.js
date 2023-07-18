@@ -84,9 +84,6 @@ function Paint() {
   return (
     <div className="App">
       <h1>Lebed</h1>
-      <div className="users__profiles">
-        <div>Hello</div>
-      </div>
       <div className="draw-area" style={{overflowX: isScrolling ? "scroll" : "hidden"}}>
         <div className={`${isMenuFixed ? 'menu-fixed' : ''}`}>
           <Menu

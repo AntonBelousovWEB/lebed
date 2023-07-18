@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import axios from "axios";
 import { REGISTER_USER, LOGIN_USER } from '../../mutation/user';
 import { useMutation } from '@apollo/client';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/authContext";
 
 export function Reg() {
   const [datas, setDatas] = React.useState(null);
   const [selectedColor, setSelectedColor] = React.useState(null);
   const [view, setView] = React.useState(false);
   const [error, setError] = React.useState("");
+  
+  const { login } = React.useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [name, setName] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -33,18 +37,28 @@ export function Reg() {
       variables: {
         registerUserInput: {
           color: selectedColor.hex,
-          name, 
+          name,
           password,
-        }
-      }
-    }).then(({data}) => {
-      console.log(data);
-      setName("");
-      setPassword("");
-    }).catch((err) => {
-      setError(err);
-    });
-  }  
+        },
+      },
+    })
+      .then(({ data }) => {
+        console.log(data);
+        setName("");
+        setPassword("");
+  
+        // Saving token to local storage
+        localStorage.setItem("token", data.registerUser.tokenJWT);
+  
+        // Logging in the user
+        login(data.registerUser);
+  
+        navigate("/draw");
+      })
+      .catch((err) => {
+        setError(err.toString());
+      });
+  };
 
   // Функция для проверки яркости цвета
   const isTooBright = (hexColor) => {
