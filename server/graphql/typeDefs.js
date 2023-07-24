@@ -17,6 +17,10 @@ module.exports = gql`
         level: Int
     }
 
+    type CtxRef {
+        dataRef: String
+    }
+
     input RegisterUserInput {
         name: String
         password: String
@@ -35,12 +39,17 @@ module.exports = gql`
     input AddMemberInput {
         userId: ID!
         guildId: ID!
-    }          
+    }      
+    
+    input EditCtxRefInput {
+        dataRef: String!
+    }
 
     type Query {
         users(ID: ID!): User!
         getUser(amount: Int): [User]
         guild(ID: ID!): Guild!
+        ctxRefUpdate(amount: Int): [CtxRef]
     }
 
     type Mutation {
@@ -50,5 +59,6 @@ module.exports = gql`
         createGuild(guildInput: GuildInput, ownerId: String): Guild!
         deleteGuild(ID: ID!, ownerId: String): Boolean
         addMemberGuild(input: AddMemberInput!): Guild!
+        editCtxRef(editCtxRefInput: EditCtxRefInput!): CtxRef
     }
 `

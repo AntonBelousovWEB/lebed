@@ -18,6 +18,7 @@ export const LOGIN_USER = gql `
             guild
             level
             name
+            tokenJWT
         }
     }
 `

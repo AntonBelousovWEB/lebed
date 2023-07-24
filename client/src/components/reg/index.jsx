@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import axios from "axios";
-import { REGISTER_USER, LOGIN_USER } from '../../mutation/user';
+import { REGISTER_USER } from '../../mutation/user';
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
@@ -43,14 +43,10 @@ export function Reg() {
       },
     })
       .then(({ data }) => {
-        console.log(data);
         setName("");
         setPassword("");
   
-        // Saving token to local storage
         localStorage.setItem("token", data.registerUser.tokenJWT);
-  
-        // Logging in the user
         login(data.registerUser);
   
         navigate("/draw");

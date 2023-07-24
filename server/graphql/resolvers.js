@@ -1,7 +1,10 @@
 const User = require('../models/User');
 const Guild = require('../models/Guild');
+const ctxRef = require('../models/ctxRef');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const resolvers = {
   Query: {
@@ -14,6 +17,9 @@ const resolvers = {
     guild: async (_, { ID }) => {
       return await Guild.findById(ID);
     },
+    ctxRefUpdate: async (_, { amount }) => {
+      return await ctxRef.find().limit(amount);
+    }
   },
   Mutation: {
     registerUser: async (_, { registerUserInput: { name, password, color } }) => {
@@ -81,7 +87,7 @@ const resolvers = {
           ...user._doc,
         };
       } else {
-        throw new Error("Incorrect password!");
+        throw new Error("Incorrect password or name!");
       }
     },    
 
@@ -141,7 +147,14 @@ const resolvers = {
       await user.save();
     
       return guild;
-    },    
+    },  
+    
+    editCtxRef: async(_, { editCtxRefInput: { dataRef } }) => {
+      const wasEdited = (await ctxRef.updateOne({ _id: process.env.ID_REF }, { dataRef: dataRef }))
+        .modifiedCount;
+
+      return wasEdited;
+    },
   },
 };
 

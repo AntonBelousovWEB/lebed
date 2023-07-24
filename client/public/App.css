@@ -71,8 +71,7 @@ h1::before {
 }
   
 .Menu {
-  position:sticky; 
-  bottom:0;
+  position: relative; 
   padding: 10px;
   max-width: 650px;
   gap: 30px;
@@ -203,7 +202,6 @@ body::-webkit-scrollbar,
 .user__profile {
   width: 50px;
   height: 50px;
-  background-color: #fff;
   border-radius: 50%;
 }
 
@@ -303,4 +301,29 @@ body::-webkit-scrollbar,
   flex-direction: column;
   gap: 50px;
   align-items: center;
+}
+
+.ghost__box-profile {
+  background-color: #a3a3a32d;
+  color: rgb(209, 9, 9);
+  padding: 20px;
+  position: absolute;
+  bottom: calc(-30px + (-50px));
+  left: 0;
+  border-radius: 5px;
+  animation: op-to-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+.logout__bttn {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  justify-content: center;
+}
+
+.logout__bttn::after {
+  content: "";
+  background: url(./img/logout.png) no-repeat;
+  width: 20px;
+  height: 20px;
 }

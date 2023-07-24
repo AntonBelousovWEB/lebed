@@ -1,5 +1,11 @@
+import React from 'react';
 import { useEffect, useRef, useState } from "react"; 
 import Menu from "./Menu";
+import { AuthContext } from '../../context/authContext';
+import { useNavigate } from 'react-router-dom';
+import { CREATE_REF } from '../../mutation/ref';
+import { GET_REF } from '../../query/ref';
+import { useMutation, useQuery } from '@apollo/client';
 
 function Paint() {
   const canvasRef = useRef(null);
@@ -8,13 +14,24 @@ function Paint() {
   const [lineWidth, setLineWidth] = useState(5);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isMenuFixed, setIsMenuFixed] = useState(false);
+  const [errors, setError] = React.useState("");
+
+  const [createRef] = useMutation(CREATE_REF);
+  const { refetch } = useQuery(GET_REF);
+
+  const navigate = useNavigate();
+
+  const { user } = React.useContext(AuthContext);
 
   useEffect(() => {
+    if (user == null) {
+      return navigate('/');
+    };
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = user.color;
     ctx.lineWidth = lineWidth;
     ctxRef.current = ctx;
 
@@ -37,7 +54,40 @@ function Paint() {
       window.removeEventListener('scroll', scrollMenu);
     };
 
-  }, [lineWidth, isScrolling]);
+  }, [lineWidth, isScrolling, user, navigate]);
+
+  const post = () => {
+      const canvas = canvasRef.current;
+      const dataURL = canvas.toDataURL();
+      createRef({
+        variables: {
+          editCtxRefInput: {
+            dataRef: dataURL
+          }
+        }
+      }).then(({ data }) => {
+       console.log(data);
+      }).catch((err) => {
+       setError(err.toString());
+      });
+  }
+
+  const get = () => {
+    refetch()
+      .then(({ data }) => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+
+        const image = new Image();
+        image.src = data.ctxRefUpdate[0].dataRef;
+
+        // When the image is loaded, draw it on the canvas
+        image.onload = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+          ctx.drawImage(image, 0, 0); // Draw the image on the canvas
+        };
+      })
+  }
 
   const startDrawing = (e) => {
     if (isScrolling) {
@@ -63,7 +113,7 @@ function Paint() {
   
     let clientX, clientY;
 
-    console.log(e.nativeEvent);
+    // console.log(e.nativeEvent); 
   
     if (e.type === 'mousemove') {
       clientX = e.nativeEvent.offsetX;
@@ -76,20 +126,20 @@ function Paint() {
     ctxRef.current.lineTo(clientX, clientY);
     ctxRef.current.stroke();
   };
-  
-  const handleScroll = () => {
-    setIsScrolling(!isScrolling);
-  };
 
   return (
     <div className="App">
       <h1>Lebed</h1>
+      <button style={{background: "#fff"}} onClick={() => post()}>Отправить</button>
+      <br />
+      <button style={{background: "#fff"}} onClick={() => get()}>Получить</button>
+      <div className="Errors">{errors.toString()}</div>
       <div className="draw-area" style={{overflowX: isScrolling ? "scroll" : "hidden"}}>
         <div className={`${isMenuFixed ? 'menu-fixed' : ''}`}>
           <Menu
             setLineWidth={setLineWidth}
             isScrolling={isScrolling}
-            handleScroll={() => handleScroll()}
+            handleScroll={() => setIsScrolling(!isScrolling)}
           />
         </div>
         <canvas
