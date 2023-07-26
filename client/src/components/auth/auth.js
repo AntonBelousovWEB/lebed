@@ -12,8 +12,14 @@ export const Auth = () => {
     const [error, setError] = React.useState("");
     const [view, setView] = React.useState(false);
 
-    const { login } = React.useContext(AuthContext);
+    const { login, user } = React.useContext(AuthContext);
     const navigate = useNavigate();
+
+    React.useEffect(() => {
+      if(user) {
+        navigate('/draw')
+      }
+    }, [user, navigate])
 
     const loginUser = (e) => {
         e.preventDefault();
@@ -43,7 +49,7 @@ export const Auth = () => {
         <div className="reg__page">
             <div className="registration__form">
               <div className="Errors">{error.toString()}</div>
-              <div className="box__inputs">
+              <div className="box__inputs-sign">
                 <form className="form__reg">
                   <input 
                     style={{
@@ -68,8 +74,8 @@ export const Auth = () => {
                       className="button__view"
                     ></button>
                   </div>
-                  <button onClick={(e) => loginUser(e)} className="reg__bttn">Register</button>
-                  <Link to="/auth">Sign in</Link>
+                  <button onClick={(e) => loginUser(e)} className="reg__bttn">Sign in</button>
+                  <Link to="/">Registration</Link>
                 </form>
               </div>
             </div>

@@ -17,14 +17,14 @@ function Paint() {
   const [errors, setError] = React.useState("");
 
   const [createRef] = useMutation(CREATE_REF);
-  const { refetch } = useQuery(GET_REF);
+  const { refetch: refetchRef } = useQuery(GET_REF);
 
   const navigate = useNavigate();
 
   const { user } = React.useContext(AuthContext);
 
   useEffect(() => {
-    if (user == null) {
+    if (!user) {
       return navigate('/');
     };
     const canvas = canvasRef.current;
@@ -73,7 +73,7 @@ function Paint() {
   }
 
   const get = () => {
-    refetch()
+    refetchRef()
       .then(({ data }) => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
@@ -86,6 +86,8 @@ function Paint() {
           ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
           ctx.drawImage(image, 0, 0); // Draw the image on the canvas
         };
+      }).catch((err) => {
+        setError(err);
       })
   }
 

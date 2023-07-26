@@ -21,6 +21,14 @@
   }
 }
 
+.scroll::-webkit-scrollbar {
+  width: 5px;               /* ширина всей полосы прокрутки */
+}
+
+.scroll::-webkit-scrollbar-thumb {
+  background-color: rgb(104, 104, 104);    /* цвет бегунка */
+}
+
 .container {
   max-width: 1270px;
   padding: 30px;
@@ -110,7 +118,8 @@ body::-webkit-scrollbar,
   animation: op-to-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 }
 
-.box__inputs {
+.box__inputs,
+.box__inputs-sign {
   background-color: #2d2c31;
   max-width: 600px;
   margin: 0 auto;
@@ -326,4 +335,30 @@ body::-webkit-scrollbar,
   background: url(./img/logout.png) no-repeat;
   width: 20px;
   height: 20px;
+}
+
+.box {
+  background-color: #a3a3a32d;
+  padding: 20px;
+  position: absolute;
+  bottom: -220px;
+  left: 0;
+  border-radius: 5px;
+  animation: op-to-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+}
+
+.user__profile-tops {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.flexbox-container__users-tops {
+  display: flex;
+  gap: 10px;
 }

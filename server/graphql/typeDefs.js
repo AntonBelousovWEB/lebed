@@ -18,6 +18,7 @@ module.exports = gql`
     }
 
     type CtxRef {
+        name: String
         dataRef: String
     }
 

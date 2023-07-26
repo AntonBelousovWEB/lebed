@@ -11,13 +11,19 @@ export function Reg() {
   const [view, setView] = React.useState(false);
   const [error, setError] = React.useState("");
   
-  const { login } = React.useContext(AuthContext);
+  const { login, user } = React.useContext(AuthContext);
   const navigate = useNavigate();
 
   const [name, setName] = React.useState("");
   const [password, setPassword] = React.useState("");
 
   const [regUser] = useMutation(REGISTER_USER);
+
+  React.useEffect(() => {
+    if(user) {
+      navigate('/draw')
+    }
+  }, [user, navigate])
 
   React.useEffect(() => {
       axios

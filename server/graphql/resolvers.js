@@ -149,11 +149,26 @@ const resolvers = {
       return guild;
     },  
     
-    editCtxRef: async(_, { editCtxRefInput: { dataRef } }) => {
-      const wasEdited = (await ctxRef.updateOne({ _id: process.env.ID_REF }, { dataRef: dataRef }))
-        .modifiedCount;
+    editCtxRef: async (_, { editCtxRefInput: { dataRef } }) => {
+      const name = process.env.NAME_REF;
+      const existingRef = await ctxRef.findOne({ name });
+    
+      if (existingRef) {
+        const wasEdited = (await ctxRef.updateOne({ name }, { dataRef })).modifiedCount;
+        return wasEdited;
+      } else {
+        const createdCtxRef = new ctxRef({
+          name,
+          dataRef
+        });
 
-      return wasEdited;
+        const res = await createdCtxRef.save();
+    
+        return {
+          id: res.id,
+          ...res._doc,
+        };
+      }
     },
   },
 };
