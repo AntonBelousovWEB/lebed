@@ -5,7 +5,8 @@ import { AuthContext } from '../../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import { CREATE_REF } from '../../mutation/ref';
 import { GET_REF } from '../../query/ref';
-import { useMutation, useQuery } from '@apollo/client';
+import { useQuery, useMutation, useSubscription } from '@apollo/client';
+import { CTX_REF_UPDATED } from '../../subscription/ref';
 
 function Paint() {
   const canvasRef = useRef(null);
@@ -22,6 +23,12 @@ function Paint() {
   const navigate = useNavigate();
 
   const { user } = React.useContext(AuthContext);
+
+  useSubscription(CTX_REF_UPDATED, {
+    onData: () => {
+      get();
+    },
+  });
 
   useEffect(() => {
     if (!user) {
@@ -55,41 +62,71 @@ function Paint() {
     };
 
   }, [lineWidth, isScrolling, user, navigate]);
+  
+  const post = async () => {
+    const canvas = canvasRef.current;
+    const dataURL = canvas.toDataURL(0.1);
+  
+    const byteString = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+  
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+  
+    const blob = new Blob([ab], { type: mimeString });
 
-  const post = () => {
-      const canvas = canvasRef.current;
-      const dataURL = canvas.toDataURL();
-      createRef({
-        variables: {
-          editCtxRefInput: {
-            dataRef: dataURL
-          }
-        }
-      }).then(({ data }) => {
-       console.log(data);
-      }).catch((err) => {
-       setError(err.toString());
+    const blobURL = URL.createObjectURL(blob);
+
+    const formData = new FormData();
+    formData.append('image', blob);
+  
+    try {
+      const response = await fetch('http://localhost:3000/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+        body: dataURL,
       });
-  }
+    
+      if (!response.ok) {
+        console.error('Failed to upload image');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
 
-  const get = () => {
-    refetchRef()
-      .then(({ data }) => {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
+    createRef({
+      variables: {
+        editCtxRefInput: {
+          dataRef: blobURL
+        }
+      }
+    }).catch((err) => {
+     setError(err.toString());
+    });
+  };   
 
-        const image = new Image();
-        image.src = data.ctxRefUpdate[0].dataRef;
+  const get = async () => {
+    const response = await fetch("http://localhost:3000/download");
 
-        // When the image is loaded, draw it on the canvas
-        image.onload = () => {
-          ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-          ctx.drawImage(image, 0, 0); // Draw the image on the canvas
-        };
-      }).catch((err) => {
-        setError(err);
-      })
-  }
+    if (response.status === 200) {
+      const data = await response.text();
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      const image = new Image();
+      image.src = data;
+      image.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, 0, 0);
+      };
+    } else {
+      console.log("Файл не найден");
+    }
+  };
 
   const startDrawing = (e) => {
     if (isScrolling) {
@@ -127,6 +164,8 @@ function Paint() {
   
     ctxRef.current.lineTo(clientX, clientY);
     ctxRef.current.stroke();
+
+    post();
   };
 
   return (
@@ -135,6 +174,8 @@ function Paint() {
       <button style={{background: "#fff"}} onClick={() => post()}>Отправить</button>
       <br />
       <button style={{background: "#fff"}} onClick={() => get()}>Получить</button>
+      <br />
+      <button style={{background: "#fff"}} onClick={() => test()}>Тест</button>
       <div className="Errors">{errors.toString()}</div>
       <div className="draw-area" style={{overflowX: isScrolling ? "scroll" : "hidden"}}>
         <div className={`${isMenuFixed ? 'menu-fixed' : ''}`}>

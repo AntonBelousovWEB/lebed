@@ -53,6 +53,10 @@ module.exports = gql`
         ctxRefUpdate(amount: Int): [CtxRef]
     }
 
+    type Subscription {
+        ctxRefUpdated: CtxRef
+    }
+
     type Mutation {
         registerUser(registerUserInput: RegisterUserInput): User!
         loginUser(loginUserInput: LoginUserInput): User!

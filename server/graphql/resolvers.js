@@ -3,8 +3,11 @@ const Guild = require('../models/Guild');
 const ctxRef = require('../models/ctxRef');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { PubSub } = require('graphql-subscriptions');
 const dotenv = require('dotenv');
+
 dotenv.config();
+const pubsub = new PubSub();
 
 const resolvers = {
   Query: {
@@ -149,26 +152,45 @@ const resolvers = {
       return guild;
     },  
     
-    editCtxRef: async (_, { editCtxRefInput: { dataRef } }) => {
-      const name = process.env.NAME_REF;
-      const existingRef = await ctxRef.findOne({ name });
+    async editCtxRef(_, { editCtxRefInput: { dataRef } }) {
+      try {
+        const name = process.env.NAME_REF;
+        const existingRef = await ctxRef.findOne({ name });
     
-      if (existingRef) {
-        const wasEdited = (await ctxRef.updateOne({ name }, { dataRef })).modifiedCount;
-        return wasEdited;
-      } else {
-        const createdCtxRef = new ctxRef({
-          name,
-          dataRef
-        });
-
-        const res = await createdCtxRef.save();
+        if (existingRef) {
+          const wasEdited = (await ctxRef.updateOne({ name }, { dataRef })).modifiedCount;
     
-        return {
-          id: res.id,
-          ...res._doc,
-        };
+          if (wasEdited) {
+            pubsub.publish('CTX_REF_UPDATED', { ctxRefUpdated: existingRef });
+          }
+    
+          return wasEdited;
+        } else {
+          const createdCtxRef = new ctxRef({
+            name,
+            dataRef,
+          });
+    
+          const res = await createdCtxRef.save();
+    
+          if (res) {
+            pubsub.publish('CTX_REF_UPDATED', { ctxRefUpdated: res });
+          }
+    
+          return {
+            id: res.id,
+            ...res._doc,
+          };
+        }
+      } catch (error) {
+        console.error('Error in editCtxRef:', error);
+        throw new Error('Failed to edit ctxRef.');
       }
+    },  
+  },
+  Subscription: {
+    ctxRefUpdated: {
+      subscribe: () => pubsub.asyncIterator(['CTX_REF_UPDATED']),
     },
   },
 };
