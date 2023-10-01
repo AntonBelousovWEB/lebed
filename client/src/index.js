@@ -21,17 +21,16 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      authorization: localStorage.getItem('token') || '', // Фиксируем опечатку: "authorization" вместо "authrization"
+      authorization: localStorage.getItem('token') || '',
     },
   };
 });
 
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:3000/graphql`, // Замените на адрес вашего сервера GraphQL WebSocket
+  uri: `ws://localhost:3000/graphql`, 
   options: {
     reconnect: true,
     connectionParams: {
-      // Добавляем токен авторизации, если он есть
       authorization: localStorage.getItem('token') || null,
     },
   },

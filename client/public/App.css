@@ -38,6 +38,7 @@
 body {
   background: url(./img/bg.png) no-repeat;
   background-size: cover;
+  min-height: 100vh;
 }
 
 .App {
@@ -361,4 +362,20 @@ body::-webkit-scrollbar,
 .flexbox-container__users-tops {
   display: flex;
   gap: 10px;
+}
+
+.button-container {
+  position: absolute;
+  bottom: -100px;
+  display: flex;
+  gap: 25px;
+}
+
+.button_move {
+  font-family: 'Montserrat', sans-serif;
+  color: rgb(0, 0, 0);
+  background-color: rgb(46, 160, 84);
+  padding: 15px;
+  border-radius: 5px;
+  display: none;
 }

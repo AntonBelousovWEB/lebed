@@ -20,10 +20,8 @@ const ErrorPage = () => {
       const handleKeyDown = (event) => {
         if (!gameOver) {
           if (event.keyCode === 37) {
-            // Start moving player left
             moveLeftRef.current = true;
           } else if (event.keyCode === 39) {
-            // Start moving player right
             moveRightRef.current = true;
           }
         }
@@ -32,10 +30,8 @@ const ErrorPage = () => {
       const handleKeyUp = (event) => {
         if (!gameOver) {
           if (event.keyCode === 37) {
-            // Stop moving player left
             moveLeftRef.current = false;
           } else if (event.keyCode === 39) {
-            // Stop moving player right
             moveRightRef.current = false;
           }
         }
@@ -100,13 +96,11 @@ const ErrorPage = () => {
           }
 
           if (moveLeftRef.current && playerPosition > 0) {
-            // Move player left
             setPlayerPosition((prevPosition) => prevPosition - 10);
           } else if (
             moveRightRef.current &&
             playerPosition < gameContainer.clientWidth - 40
           ) {
-            // Move player right
             setPlayerPosition((prevPosition) => prevPosition + 10);
           }
         }, 100);
@@ -125,6 +119,20 @@ const ErrorPage = () => {
       ></div>
     ));
 
+    const moveLeft = () => {
+      moveLeftRef.current = true
+      setTimeout(() => {
+        moveLeftRef.current = false
+      }, 100)
+    }
+
+    const moveRight = () => {
+      moveRightRef.current = true
+      setTimeout(() => {
+        moveRightRef.current = false
+      }, 100)
+    }
+
     return (
       <div className="game-container" ref={gameContainerRef}>
         <div
@@ -136,10 +144,19 @@ const ErrorPage = () => {
           <div className="game-over">
             Game Over!
             <Link to="/" className="error__bttn">
-                Homepage
+              Homepage
             </Link>
           </div>
         )}
+        <div className="button-container">
+          <button className="button_move" onClick={() => moveLeft()}>
+            Move Left
+          </button>
+          <br/>
+          <button className="button_move" onClick={() => moveRight()}>
+            Move Right
+          </button>
+        </div>
       </div>
     );
   };
