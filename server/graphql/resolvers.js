@@ -1,10 +1,13 @@
 const User = require('../models/User');
 const Guild = require('../models/Guild');
 const ctxRef = require('../models/ctxRef');
+const Message = require('../models/message');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { PubSub } = require('graphql-subscriptions');
+const NodeRSA = require('node-rsa');
 const dotenv = require('dotenv');
+const key = new NodeRSA({ b: 512 });
 
 dotenv.config();
 const pubsub = new PubSub();
@@ -22,7 +25,18 @@ const resolvers = {
     },
     ctxRefUpdate: async (_, { amount }) => {
       return await ctxRef.find().limit(amount);
-    }
+    },
+    getMessages: async (_, { amount }) => {
+      const messages = await Message.find().limit(amount);
+      const decryptedMessages = messages.map(message => {
+          const decryptedMessage = key.decrypt(message.message, 'utf8');
+          return {
+              ...message._doc,
+              message: decryptedMessage,
+          };
+      });   
+      return decryptedMessages;
+    },  
   },
   Mutation: {
     registerUser: async (_, { registerUserInput: { name, password, color } }) => {
@@ -186,12 +200,40 @@ const resolvers = {
         console.error('Error in editCtxRef:', error);
         throw new Error('Failed to edit ctxRef.');
       }
-    },  
+    }, 
+    async addMessage(_, { addMessageInput: { color, message } }) {
+      try {
+        const encryptedMessage = key.encrypt(message, 'base64');
+        const decryptedMessage = key.decrypt(encryptedMessage, 'utf8');
+
+        const addMessage = new Message({
+         color,
+         message: encryptedMessage
+        });
+
+        const res = await addMessage.save();
+    
+        if (res) {
+          pubsub.publish('CHAT_UPDATED', { chatUpdated: { ...res, message: decryptedMessage }});
+        }
+
+        return {
+          id: res.id,
+          ...res._doc,
+        };
+      } catch(error) {
+        console.error('Error to send message: ', error);
+        throw new Error('Failed to send message.');
+      }
+    },
   },
   Subscription: {
     ctxRefUpdated: {
       subscribe: () => pubsub.asyncIterator(['CTX_REF_UPDATED']),
     },
+    chatUpdated: {
+      subscribe: () => pubsub.asyncIterator(['CHAT_UPDATED']),
+    }
   },
 };
 

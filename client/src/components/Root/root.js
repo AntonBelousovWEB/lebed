@@ -1,9 +1,9 @@
 import React from "react";
 import Paint from "../paint/paint";
-import { Auth } from "../auth/auth";
-import { Reg } from "../reg";
-import { What } from "../what/what";
-import ErrorPage from "../404";
+import { Auth } from '../Authentication/auth/auth'
+import { Reg } from "../Authentication/reg";
+import { What } from "../UI/what/what";
+import ErrorPage from "../UI/404"
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function Root() {

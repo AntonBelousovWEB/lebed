@@ -1,9 +1,9 @@
 import React from "react";
 import axios from "axios";
-import { REGISTER_USER } from '../../mutation/user';
+import { REGISTER_USER } from '../../../mutation/user';
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/authContext";
+import { AuthContext } from "../../../context/authContext";
 
 export function Reg() {
   const [datas, setDatas] = React.useState(null);

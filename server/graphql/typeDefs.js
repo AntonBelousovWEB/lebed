@@ -22,6 +22,11 @@ module.exports = gql`
         dataRef: String
     }
 
+    type Message {
+        color: String
+        message: String
+    }
+
     input RegisterUserInput {
         name: String
         password: String
@@ -46,15 +51,22 @@ module.exports = gql`
         dataRef: String!
     }
 
+    input AddMessageInput {
+        color: String!
+        message: String!
+    }
+
     type Query {
         users(ID: ID!): User!
         getUser(amount: Int): [User]
         guild(ID: ID!): Guild!
         ctxRefUpdate(amount: Int): [CtxRef]
+        getMessages(amount: Int): [Message]
     }
 
     type Subscription {
         ctxRefUpdated: CtxRef
+        chatUpdated: Message
     }
 
     type Mutation {
@@ -65,5 +77,6 @@ module.exports = gql`
         deleteGuild(ID: ID!, ownerId: String): Boolean
         addMemberGuild(input: AddMemberInput!): Guild!
         editCtxRef(editCtxRefInput: EditCtxRefInput!): CtxRef
+        addMessage(addMessageInput: AddMessageInput!): Message
     }
 `

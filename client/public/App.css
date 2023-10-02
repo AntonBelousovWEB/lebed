@@ -387,9 +387,15 @@ body::-webkit-scrollbar,
   min-height: 500px;
   max-height: 500px;
   min-width: 300px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   border-radius: 0px 10px 10px 0px;
+}
+
+.message-list {
+  min-height: 420px;
+  max-height: 420px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .sidebar {
@@ -404,7 +410,7 @@ body::-webkit-scrollbar,
   background: #000;
   color: #fff;
   width: 300px;
-  padding: 5px 15px;
+  padding: 5px 50px 5px 15px;
   font-family: 'Montserrat', sans-serif;
 }
 
@@ -428,7 +434,27 @@ body::-webkit-scrollbar,
 }
 
 .send {
-  width: 24px;
-  height: 24px;
-  fill: #ff0000;
+  position: absolute;
+  bottom: 5px;
+  right: 15px;
+  width: 18px;
+  height: 18px;
+  fill: rgb(46, 160, 84);
+}
+
+.message_color {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+}
+
+.message_text {
+  max-width: 200px;
+  word-break: break-all;
+}
+
+.message {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
 }
