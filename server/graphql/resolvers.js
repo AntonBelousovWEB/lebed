@@ -206,6 +206,10 @@ const resolvers = {
         const encryptedMessage = key.encrypt(message, 'base64');
         const decryptedMessage = key.decrypt(encryptedMessage, 'utf8');
 
+        if(message.length > 150 || message.length < 1) {
+          throw new Error('Error send Message!');
+        }
+
         const addMessage = new Message({
          color,
          message: encryptedMessage
@@ -214,7 +218,7 @@ const resolvers = {
         const res = await addMessage.save();
     
         if (res) {
-          pubsub.publish('CHAT_UPDATED', { chatUpdated: { ...res, message: decryptedMessage }});
+          pubsub.publish('CHAT_UPDATED', { chatUpdated: { ...res, color, message: decryptedMessage }});
         }
 
         return {
@@ -222,8 +226,7 @@ const resolvers = {
           ...res._doc,
         };
       } catch(error) {
-        console.error('Error to send message: ', error);
-        throw new Error('Failed to send message.');
+        throw new Error(error);
       }
     },
   },

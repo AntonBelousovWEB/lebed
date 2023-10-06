@@ -315,7 +315,7 @@ body::-webkit-scrollbar,
 }
 
 .ghost__box-profile {
-  background-color: #a3a3a32d;
+  background-color: #a3a3a38a;
   color: rgb(209, 9, 9);
   padding: 20px;
   position: absolute;
@@ -340,7 +340,7 @@ body::-webkit-scrollbar,
 }
 
 .box {
-  background-color: #a3a3a32d;
+  background-color: #a3a3a3dc;
   padding: 20px;
   position: absolute;
   bottom: -220px;
@@ -398,10 +398,27 @@ body::-webkit-scrollbar,
   overflow-y: auto;
 }
 
-.sidebar {
+.ph_sidebar {
+  max-height: 300px;
+  position: absolute;
+  right: 0;
+  margin-top: 20px;
+}
+
+.ph_sidebar {
+  min-height: 100vh;
+  position: absolute;
+  right: 0;
+}
+
+.pc_sidebar {
   position: absolute;
   right: 0;
   top: 95px;
+}
+
+.chat_menu {
+  display: none;
 }
 
 .input_text_chat {
@@ -443,14 +460,20 @@ body::-webkit-scrollbar,
 }
 
 .message_color {
+  border: 1px solid #000;
   border-radius: 50%;
   width: 20px;
   height: 20px;
 }
 
 .message_text {
+  font-family: 'Montserrat', sans-serif;
   max-width: 200px;
   word-break: break-all;
+}
+
+.chat_error {
+  max-width: 200px;
 }
 
 .message {

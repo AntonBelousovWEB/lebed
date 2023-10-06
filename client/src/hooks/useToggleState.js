@@ -5,16 +5,20 @@ const useToggleState = (initialState = true) => {
   const ref = useRef(null);
 
   useEffect(() => {
-    const handleDocumentClick = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setState(initialState);
+    const refCurrent = ref.current;
+
+    const handleRefClick = (event) => {
+      if (event.target === refCurrent) {
+        return;
       }
+
+      setState(initialState);
     };
 
-    document.addEventListener("click", handleDocumentClick);
+    refCurrent.addEventListener("click", handleRefClick);
 
     return () => {
-      document.removeEventListener("click", handleDocumentClick);
+      refCurrent.removeEventListener("click", handleRefClick);
     };
   }, [initialState]);
 

@@ -3,6 +3,7 @@ import { AuthContext } from "../../context/authContext";
 import { GET_ALL_USERS } from "../../query/user";
 import { useQuery } from "@apollo/client";
 import useToggleState from "../../hooks/useToggleState";
+import Chat from "../UI/chat/Chat";
 
 const Menu = ({ handleScroll }) => {
   const { user, logout } = React.useContext(AuthContext);
@@ -12,6 +13,7 @@ const Menu = ({ handleScroll }) => {
 
   const { state: viewUser, toggleState: toggleViewUser, ref: userRef } = useToggleState(true);
   const { state: viewTop, toggleState: toggleViewTop, ref: topRef } = useToggleState(true);
+  const { state: viewChat, toggleState: toggleViewChat, ref: chatRef } = useToggleState(true);
 
   React.useEffect(() => {
     refetchUsers().then(({ data }) => {
@@ -59,6 +61,16 @@ const Menu = ({ handleScroll }) => {
               {user.name} - level {user.level}
             </div>
           ))}
+      </div>
+      <div className="chat_menu">
+        <div className="container__menu">
+          <h2 onClick={toggleViewChat} ref={chatRef} className="what">
+            Чат
+          </h2>
+        </div>
+        <div style={{ display: viewChat ? "none" : "flex" }} className="scroll">
+            <Chat sidebar="ph_sidebar" />
+        </div>
       </div>
       <button className="scroll-of-drawing" onClick={handleScroll}>
         Scroll or Drawing

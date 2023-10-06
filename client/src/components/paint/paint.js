@@ -87,7 +87,7 @@ function Paint() {
           height={"1000px"}
         />
       </div>
-      <Chat />
+      <Chat sidebar="pc_sidebar" />
     </div>
   );
 }

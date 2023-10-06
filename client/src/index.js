@@ -27,7 +27,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const wsLink = new WebSocketLink({
-  uri: `ws://localhost:3000/graphql`, 
+  uri: `ws://192.168.1.248:3000/graphql`, 
   options: {
     reconnect: true,
     connectionParams: {

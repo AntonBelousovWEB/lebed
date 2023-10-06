@@ -20,7 +20,7 @@ export function post(canvasRef, createRef, setError) {
       formData.append('image', blob);
   
       try {
-        const response = await fetch('http://localhost:3000/upload', {
+        const response = await fetch('http://192.168.1.248:3000/upload', {
           method: 'POST',
           headers: {
             'Content-Type': 'text/plain',
@@ -50,7 +50,7 @@ export function post(canvasRef, createRef, setError) {
   
 export function get(canvasRef) {
   const getLogic = async () => {
-    const response = await fetch("http://localhost:3000/download");
+    const response = await fetch("http://192.168.1.248:3000/download");
 
     if (response.status === 200) {
       const data = await response.text();
