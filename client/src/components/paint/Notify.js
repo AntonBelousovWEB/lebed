@@ -1,29 +1,14 @@
 import React from "react";
 import useToggleState from "../../hooks/useToggleState";
-import { ADD_POST } from "../../mutation/addPost";
-import { useMutation, useQuery, useSubscription } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { GET_POST } from "../../query/Posts";
 import { POST_UPDATED } from "../../subscription/post";
 
 export default function Notify() {
     const { state: viewNoti, toggleState: toggleViewNoti, ref: notiRef } = useToggleState(true);
-    const [addPost] = useMutation(ADD_POST);
     const { refetch: refetchPosts } = useQuery(GET_POST);
     const postListRef = React.useRef(null);
     const [posts, setPosts] = React.useState([]);
-
-    // const sendPost = () => {
-    //             addPost({
-    //                 variables: {
-    //                     addPostInput: {
-    //                         title: "Старт",
-    //                         desc: "Стартовал бетатест веб приложения Lebed",
-    //                     },
-    //                 },
-    //             }).catch((err) => {
-    //                 console.log(err)
-    //             });
-    //         }
 
     useSubscription(POST_UPDATED, {
         onData: ({ data }) => {

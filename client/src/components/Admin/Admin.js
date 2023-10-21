@@ -43,7 +43,9 @@ const Admin = () => {
     return (
       <div>
         <h1>Welcome to the App!</h1>
-        <button onClick={handleLogout}>Logout</button>
+        <button 
+            style={{color: "#fff", marginBottom: "30px"}} 
+            onClick={handleLogout}>Logout</button>
         <Adminka />
       </div>
     );
