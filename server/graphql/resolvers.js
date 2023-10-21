@@ -2,9 +2,11 @@ const User = require('../models/User');
 const Guild = require('../models/Guild');
 const ctxRef = require('../models/ctxRef');
 const Message = require('../models/message');
+const Post = require('../models/Post')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { PubSub } = require('graphql-subscriptions');
+const { ApolloError, UserInputError } = require('apollo-server');
 const NodeRSA = require('node-rsa');
 const dotenv = require('dotenv');
 const key = new NodeRSA({ b: 512 });
@@ -37,6 +39,9 @@ const resolvers = {
       });   
       return decryptedMessages;
     },  
+    getPost: async (_, { amount }) => {
+      return await Post.find().limit(amount);
+    }
   },
   Mutation: {
     registerUser: async (_, { registerUserInput: { name, password, color } }) => {
@@ -113,6 +118,8 @@ const resolvers = {
       return deletedCount === 1;
     },
 
+    // //////////////////////////////////////////////////////////
+
     createGuild: async (_, { guildInput: { name }, ownerId }) => {
       const user = await User.findById(ownerId);
 
@@ -166,8 +173,13 @@ const resolvers = {
       return guild;
     },  
     
-    async editCtxRef(_, { editCtxRefInput: { dataRef } }) {
+    async editCtxRef(_, { editCtxRefInput: { dataRef, token } }) {
       try {
+        const user = await User.findOne({ tokenJWT: token });
+        if (!user) {
+          throw new UserInputError('User not found');
+        }
+    
         const name = process.env.NAME_REF;
         const existingRef = await ctxRef.findOne({ name });
     
@@ -198,7 +210,7 @@ const resolvers = {
         }
       } catch (error) {
         console.error('Error in editCtxRef:', error);
-        throw new Error('Failed to edit ctxRef.');
+        throw new ApolloError('Failed to edit ctxRef', 'EDIT_CTX_REF_ERROR');
       }
     }, 
     async addMessage(_, { addMessageInput: { color, message } }) {
@@ -229,6 +241,28 @@ const resolvers = {
         throw new Error(error);
       }
     },
+    async addPost(_, { addPostInput: { title, desc, img, link } }) {
+      try {
+        const addPost = new Post({
+          title,
+          desc,
+          img,
+          link
+        });
+        const res = await addPost.save();
+
+        if (res) {
+          pubsub.publish('POST_UPDATED', { postUpdated: res });
+        }
+
+        return {
+          id: res.id,
+          ...res._doc,
+        };
+      } catch(error) {
+        throw new Error(error);
+      }
+    }
   },
   Subscription: {
     ctxRefUpdated: {
@@ -236,6 +270,9 @@ const resolvers = {
     },
     chatUpdated: {
       subscribe: () => pubsub.asyncIterator(['CHAT_UPDATED']),
+    },
+    postUpdated: {
+      subscribe: () => pubsub.asyncIterator(['POST_UPDATED']),
     }
   },
 };

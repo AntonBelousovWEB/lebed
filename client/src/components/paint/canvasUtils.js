@@ -1,4 +1,4 @@
-export function post(canvasRef, createRef, setError) {
+export function post(canvasRef, createRef, setError, token) {
     const postLogic = async () => {
       const canvas = canvasRef.current;
       const dataURL = canvas.toDataURL(0.1);
@@ -39,6 +39,7 @@ export function post(canvasRef, createRef, setError) {
         variables: {
           editCtxRefInput: {
             dataRef: blobURL,
+            token
           },
         },
       }).catch((err) => {

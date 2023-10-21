@@ -14,6 +14,7 @@ const Menu = ({ handleScroll }) => {
   const { state: viewUser, toggleState: toggleViewUser, ref: userRef } = useToggleState(true);
   const { state: viewTop, toggleState: toggleViewTop, ref: topRef } = useToggleState(true);
   const { state: viewChat, toggleState: toggleViewChat, ref: chatRef } = useToggleState(true);
+  const { state: viewBurger, toggleState: toggleViewBurger, ref: burgerRef } = useToggleState(true);
 
   React.useEffect(() => {
     refetchUsers().then(({ data }) => {
@@ -25,42 +26,47 @@ const Menu = ({ handleScroll }) => {
   return (
     <div className="Menu">
       <div className="container__menu">
-        <label>Profile</label>
-        <div
-          onClick={toggleViewUser}
-          style={{ backgroundColor: user && user.color }}
-          className="user__profile"
-          ref={userRef}
-        ></div>
-        <div 
-          style={{ display: viewUser ? "none" : "block" }} 
-          className="ghost__box-profile">
-          <button onClick={() => logout()} className="logout__bttn">
-            Logout
-          </button>
+        <label onClick={toggleViewBurger} ref={burgerRef} className="burger"></label>
+      </div>
+      <div style={{ display: viewBurger ? "none" : "flex" }} className="ghost__box-burger">
+        <div className="container__menu">
+          <label>Profile</label>
+          <div
+            onClick={toggleViewUser}
+            style={{ backgroundColor: user && user.color }}
+            className="user__profile"
+            ref={userRef}
+          ></div>
+          <div 
+            style={{ display: viewUser ? "none" : "block" }} 
+            className="ghost__box-profile">
+            <button onClick={() => logout()} className="logout__bttn">
+              Logout
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="container__menu">
-        <h2 className="what">ЧАВО?</h2>
-      </div>
-      <div className="container__menu">
-        <h2 onClick={toggleViewTop} ref={topRef} className="what">
-          TOPs
-        </h2>
-      </div>
-      <div style={{ display: viewTop ? "none" : "flex" }} className="box scroll">
-        {users &&
-          users.map((user) => (
-            <div 
-              className="flexbox-container__users-tops" 
-              key={user.__typename + user.name}>
+        <div className="container__menu">
+          <h2 className="what">ЧАВО?</h2>
+        </div>
+        <div className="container__menu">
+          <h2 onClick={toggleViewTop} ref={topRef} className="what">
+            TOPs
+          </h2>
+        </div>
+        <div style={{ display: viewTop ? "none" : "flex" }} className="box scroll">
+          {users &&
+            users.map((user) => (
               <div 
-                style={{ backgroundColor: user.color }} 
-                className="user__profile-tops">
+                className="flexbox-container__users-tops" 
+                key={user.__typename + user.name}>
+                <div 
+                  style={{ backgroundColor: user.color }} 
+                  className="user__profile-tops">
+                </div>
+                {user.name} - level {user.level}
               </div>
-              {user.name} - level {user.level}
-            </div>
-          ))}
+            ))}
+        </div>
       </div>
       <div className="chat_menu">
         <div className="container__menu">

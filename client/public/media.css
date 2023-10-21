@@ -18,6 +18,27 @@
     .chat_menu {
         display: block;
     }
+    .noti {
+        bottom: 30px;
+        left: 15px;
+    }
+    .noti-box {
+        top: auto;
+        right: auto;
+        left: 0;
+        bottom: 50px;
+        border-radius: 5px 5px 5px 0px;
+    }
+    .container {
+        padding: 0;
+    }
+    h1 {
+        font-size: 30px;
+    }
+    h1::before {
+        width: 22px;
+        background-size: 22px;
+    }
 }
 @media screen and (max-width: 1900px) {
     .pc_sidebar {

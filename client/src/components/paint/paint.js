@@ -7,6 +7,7 @@ import { AuthContext } from '../../context/authContext';
 import { CREATE_REF } from '../../mutation/ref';
 import { post, get, startDrawing, endDrawing, draw } from './canvasUtils';
 import Chat from '../UI/chat/Chat';
+import Notify from './Notify';
 
 function Paint() {
   const canvasRef = useRef(null);
@@ -15,7 +16,9 @@ function Paint() {
   const [lineWidth, setLineWidth] = useState(5);
   const [isScrolling, setIsScrolling] = useState(false);
   const [isMenuFixed, setIsMenuFixed] = useState(false);
+  // const [canvasHeight, setCanvasHeight] = useState(1000);
   const [errors, setError] = React.useState("");
+  const [token, setToken] = React.useState("");
 
   const [createRef] = useMutation(CREATE_REF);
 
@@ -33,6 +36,7 @@ function Paint() {
     if (!user) {
       return navigate('/');
     }
+    setToken(localStorage.getItem('token'))
     get(canvasRef);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -50,6 +54,7 @@ function Paint() {
 
       if (drawAreaRect.top <= 0) {
         setIsMenuFixed(true);
+        // setCanvasHeight((prevHeight) => prevHeight + 10);
       } else {
         setIsMenuFixed(false);
       }
@@ -65,6 +70,7 @@ function Paint() {
 
   return (
     <div className="App">
+      <Notify />
       <h1>Lebed</h1>
       <div className="Errors">{errors.toString()}</div>
       <div className="draw-area" style={{ overflowX: isScrolling ? "scroll" : "hidden" }}>
@@ -78,13 +84,19 @@ function Paint() {
         <canvas
           onMouseDown={(e) => startDrawing(e, isScrolling, ctxRef, setIsDrawing)}
           onMouseUp={() => endDrawing(ctxRef, setIsDrawing)}
-          onMouseMove={(e) => draw(e, isDrawing, isScrolling, ctxRef, () => post(canvasRef, createRef, setError))}
+          onMouseMove={
+            (e) => draw(e, isDrawing, isScrolling, ctxRef, 
+              () => post(canvasRef, createRef, setError, token))
+          }
           onTouchStart={(e) => startDrawing(e, isScrolling, ctxRef, setIsDrawing)}
           onTouchEnd={() => endDrawing(ctxRef, setIsDrawing)}
-          onTouchMove={(e) => draw(e, isDrawing, isScrolling, ctxRef, () => post(canvasRef, createRef, setError))}
+          onTouchMove={
+            (e) => draw(e, isDrawing, isScrolling, ctxRef, 
+              () => post(canvasRef, createRef, setError, token))
+          }
           ref={canvasRef}
           width={`1280px`}
-          height={"1000px"}
+          height={`1000px`}
         />
       </div>
       <Chat sidebar="pc_sidebar" />

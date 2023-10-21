@@ -3,6 +3,7 @@ import Paint from "../paint/paint";
 import { Auth } from '../Authentication/auth/auth'
 import { Reg } from "../Authentication/reg";
 import { What } from "../UI/what/what";
+import Admin from "../Admin/Admin";
 import ErrorPage from "../UI/404"
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -14,6 +15,7 @@ function Root() {
             <Route path="/auth" element={<Auth />} />
             <Route path="/draw" element={<Paint />} />
             <Route path="/what" element={<What />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<ErrorPage />} />
         </Routes>
     </Router>

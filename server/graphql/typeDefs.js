@@ -27,6 +27,13 @@ module.exports = gql`
         message: String
     }
 
+    type Post {
+        title: String
+        desc: String
+        img: String
+        link: String
+    }
+
     input RegisterUserInput {
         name: String
         password: String
@@ -46,9 +53,17 @@ module.exports = gql`
         userId: ID!
         guildId: ID!
     }      
+
+    input AddPostInput {
+        title: String!
+        desc: String!
+        img: String
+        link: String
+    }
     
     input EditCtxRefInput {
         dataRef: String!
+        token: String!
     }
 
     input AddMessageInput {
@@ -62,11 +77,13 @@ module.exports = gql`
         guild(ID: ID!): Guild!
         ctxRefUpdate(amount: Int): [CtxRef]
         getMessages(amount: Int): [Message]
+        getPost(amount: Int): [Post]
     }
 
     type Subscription {
         ctxRefUpdated: CtxRef
         chatUpdated: Message
+        postUpdated: Post
     }
 
     type Mutation {
@@ -78,5 +95,6 @@ module.exports = gql`
         addMemberGuild(input: AddMemberInput!): Guild!
         editCtxRef(editCtxRefInput: EditCtxRefInput!): CtxRef
         addMessage(addMessageInput: AddMessageInput!): Message
+        addPost(addPostInput: AddPostInput!): Post
     }
 `
