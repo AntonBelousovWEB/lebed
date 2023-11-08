@@ -529,6 +529,7 @@ body::-webkit-scrollbar,
   overflow-x: hidden;
   border-radius: 5px 0px 5px 5px;
   height: 300px;
+  animation: op-to-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 }
 
 .noti-box .post:not(:first-child) {
@@ -627,4 +628,14 @@ body::-webkit-scrollbar,
   background-color: #6b5252;
   margin: 0 auto;
   border-radius: 5px;
+}
+
+.helloworldmyelem {
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 15px;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 1px;
+  border: 2px solid #000;
 }

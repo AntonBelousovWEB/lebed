@@ -1,4 +1,4 @@
-export function post(canvasRef, createRef, setError, token) {
+export function post(canvasRef, createRef, setError, token, user, ePost) {
     const postLogic = async () => {
       const canvas = canvasRef.current;
       const dataURL = canvas.toDataURL(0.1);
@@ -18,6 +18,14 @@ export function post(canvasRef, createRef, setError, token) {
   
       const formData = new FormData();
       formData.append('image', blob);
+
+      const data = { 
+        user, 
+        position: {
+          ePost
+        }, 
+        dataURL 
+      };
   
       try {
         const response = await fetch('http://192.168.1.248:3000/upload', {
@@ -25,7 +33,7 @@ export function post(canvasRef, createRef, setError, token) {
           headers: {
             'Content-Type': 'text/plain',
           },
-          body: dataURL,
+          body: JSON.stringify(data),
         });
   
         if (!response.ok) {
@@ -49,22 +57,27 @@ export function post(canvasRef, createRef, setError, token) {
     postLogic();
 }
   
-export function get(canvasRef) {
+export function get(canvasRef, Users) {
   const getLogic = async () => {
-    const response = await fetch("http://192.168.1.248:3000/download");
+    try {
+      const response = await fetch("http://192.168.1.248:3000/download");
 
-    if (response.status === 200) {
-      const data = await response.text();
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      const image = new Image();
-      image.src = data;
-      image.onload = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, 0, 0);
-      };
-    } else {
-      console.log("Файл не найден");
+      if (response.status === 200) {
+        const data = await response.json();
+        const canvas = canvasRef.current;
+        Users(JSON.parse(data.Users))
+        const ctx = canvas.getContext('2d');
+        const image = new Image();
+        image.src = data.Canvas;
+        image.onload = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(image, 0, 0);
+        };
+      } else {
+        console.log("Файл не найден");
+      }
+    } catch (error) {
+      console.error("Ошибка при загрузке файла:", error);
     }
   };
   getLogic();
@@ -87,21 +100,21 @@ export const endDrawing = (ctxRef, setIsDrawing) => {
   setIsDrawing(false);
 };
 
-export const draw = (e, isDrawing, isScrolling, ctxRef, post) => {
+export const draw = (e, isDrawing, isScrolling, ctxRef, setEPost, post) => {
   if (!isDrawing || isScrolling) {
     return;
   }
-
   let clientX, clientY;
-  // console.log(e.nativeEvent); 
 
   if (e.type === 'mousemove') {
     clientX = e.nativeEvent.offsetX;
     clientY = e.nativeEvent.offsetY;
   } else if (e.type === 'touchmove') {
     clientX = e.touches[0].pageX - e.touches[0].target.offsetLeft - 30;
-    clientY = e.touches[0].pageY - e.touches[0].target.offsetTop - 150;
+    clientY = e.touches[0].pageY - e.touches[0].target.offsetTop - 100;
   }
+
+  setEPost({clientX, clientY})
 
   ctxRef.current.lineTo(clientX, clientY);
   ctxRef.current.stroke();

@@ -4,10 +4,12 @@ const mongoose = require("mongoose");
 const { createServer } = require('http');
 const { execute, subscribe } = require('graphql');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
+const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const dotenv = require('dotenv');
 const cors = require('cors');
+const WebSocket = require( "ws");
 const bodyParser = require("body-parser");
 const util = require("util");
 
@@ -18,8 +20,7 @@ const MONGODB = process.env.MONGODB_KEY;
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
 
-const usersFilePath = path.join("./uploads/drawingUsers", "users.txt");
-const uploadDirectory = path.join(__dirname, "uploads");
+const usersFilePath = path.join("./uploads/drawingUsers", "users.json");
 
 const writeFileAsync = util.promisify(fs.writeFile);
 const app = express();
@@ -33,7 +34,7 @@ app.get("/download", (req, res) => {
   if (fs.existsSync(filePath)) {
     const data = {
       Canvas: fs.readFileSync(filePath, "utf8"),
-      Users: fs.readFileSync(usersFilePath, "utf8")
+      Users: JSON.parse(fs.readFileSync(usersFilePath))
     }
     res.setHeader("Content-Type", "text/plain");
     res.send(data);
@@ -44,15 +45,30 @@ app.get("/download", (req, res) => {
 
 app.use(express.static("public"));
 
+const uploadDirectory = path.join(__dirname, "uploads");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDirectory);
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage });
+
 app.post("/upload", async (req, res) => {
-  const { user, position, dataURL } = JSON.parse(req.body);
+  const { user, position, dataURL } = req.body;
   const textToWrite = dataURL;
   const filePath = path.join(uploadDirectory, "blob.txt");
 
   try {
     await writeFileAsync(filePath, textToWrite);
     const userPositionData = { user, position };
-    fs.writeFileSync(usersFilePath, JSON.stringify(userPositionData));
+    const existingData = JSON.parse(fs.readFileSync(usersFilePath));
+    existingData.push(userPositionData);
+    fs.writeFileSync(usersFilePath, JSON.stringify(existingData));
     res.sendStatus(200);
   } catch (error) {
     console.error("Failed to write text to file:", error);

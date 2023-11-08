@@ -175,10 +175,10 @@ const resolvers = {
     
     async editCtxRef(_, { editCtxRefInput: { dataRef, token } }) {
       try {
-        const user = await User.findOne({ tokenJWT: token });
-        if (!user) {
-          throw new UserInputError('User not found');
-        }
+        // const user = await User.findOne({ tokenJWT: token });
+        // if (!user) {
+        //   throw new UserInputError('User not found');
+        // }
     
         const name = process.env.NAME_REF;
         const existingRef = await ctxRef.findOne({ name });
