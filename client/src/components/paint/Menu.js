@@ -8,6 +8,7 @@ import Chat from "../UI/chat/Chat";
 const Menu = ({ handleScroll }) => {
   const { user, logout } = React.useContext(AuthContext);
   const [users, setUsers] = React.useState([]);
+  const [lvl, setLvl] = React.useState(null);
 
   const { refetch: refetchUsers } = useQuery(GET_ALL_USERS);
 
@@ -22,6 +23,13 @@ const Menu = ({ handleScroll }) => {
       setUsers(sortedUsers);
     });
   }, [refetchUsers]);
+
+  React.useEffect(() => {
+    if(user) {
+      setLvl(Number.isInteger(user.level) ? user.level + 1 : Math.ceil(user.level));
+      console.log(user && user.level)
+    }
+  }, []);
 
   return (
     <div className="Menu">
@@ -44,6 +52,14 @@ const Menu = ({ handleScroll }) => {
               Logout
             </button>
           </div>
+        </div>
+        <div className="container__menu">
+          <label>Level</label>
+          <progress className="progress_lvl" 
+            value={user && user.level - lvl + 1} 
+            max={1} 
+          />
+          <p>{lvl}</p>
         </div>
         <div className="container__menu">
           <h2 className="what">ЧАВО?</h2>

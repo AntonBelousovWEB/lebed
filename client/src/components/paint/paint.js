@@ -8,6 +8,7 @@ import { CREATE_REF } from '../../mutation/ref';
 import { post, get, startDrawing, endDrawing, draw } from './canvasUtils';
 import Chat from '../UI/chat/Chat';
 import Notify from './Notify';
+import { UPDATE_LVL } from '../../mutation/user';
 
 function Paint() {
   const canvasRef = useRef(null);
@@ -22,15 +23,27 @@ function Paint() {
   const [users, setUsers] = React.useState(null);
   const [ePost, setEPost] = React.useState(null)
   const [createRef] = useMutation(CREATE_REF);
+  const [updateLvl] = useMutation(UPDATE_LVL)
   const navigate = useNavigate();
 
   const { user } = React.useContext(AuthContext);
 
-  useSubscription(CTX_REF_UPDATED, {
-    onData: () => {
-      get(canvasRef, setUsers);
-    },
-  });
+  const wsRef = useRef(null);
+
+  useEffect(() => {
+    wsRef.current = new WebSocket('ws://localhost:3001');
+    console.log(wsRef)
+    wsRef.current.onmessage = (event) => {
+      if (event.data === 'folderChange') {
+        get(canvasRef, setUsers);
+      }
+    };
+
+    return () => {
+      wsRef.current.close();
+    };
+  }, []);
+
   useEffect(() => {
     if (!user) {
       return navigate('/');
@@ -78,6 +91,7 @@ function Paint() {
       () => post(
         canvasRef, 
         createRef, 
+        updateLvl,
         setError, 
         token, 
         user, 
@@ -108,18 +122,24 @@ function Paint() {
       <h1>Lebed</h1>
       <div className="Errors">{errors.toString()}</div>
       {users && users ? (
-        <div className='helloworldmyelem' key={user.id} style={{ 
-           position: "absolute", 
-           left: users.position.ePost.clientX, 
-           top: users.position.ePost.clientY,
-           backgroundColor: users.user.color,
-           zIndex: "1" }}>
-           {users.user.name}
-        </div>
+        users.position.ePost && users.user ? (
+          <div className='helloworldmyelem' key={users.user.id} style={{ 
+            position: "absolute", 
+            left: users.position.ePost.clientX, 
+            top: users.position.ePost.clientY + 100,
+            backgroundColor: users.user.color,
+            zIndex: "1" }}>
+            {users.user.name}
+          </div>
+        ) : (
+          null
+        )
       ) : (
         null
       )}
-      <div className="draw-area" style={{ overflowX: isScrolling ? "scroll" : "hidden" }}>
+      <div className="draw-area" style={{ 
+          overflowX: isScrolling ? "scroll" : "hidden" 
+        }}>
         <div className={`${isMenuFixed ? 'menu-fixed' : ''}`}>
           <Menu
             setLineWidth={setLineWidth}

@@ -1,1 +1,1 @@
-{"user":{"user_id":"64c12aeff39f134d2671a811","color":"#0048BA","name":"Hello","iat":1699451091,"exp":1699458291},"position":{"ePost":{"clientX":810,"clientY":157}}}
+{"user":{"user_id":"64c12aeff39f134d2671a811","color":"#0048BA","name":"Hello","level":31.380550000000195,"iat":1699803836,"exp":1699811036},"position":{"ePost":{"clientX":968,"clientY":181}}}

@@ -6,7 +6,7 @@ module.exports = gql`
         password: String
         tokenJWT: String
         color: String
-        level: Int
+        level: Float
         guild: String
     }
 
@@ -43,6 +43,11 @@ module.exports = gql`
     input LoginUserInput {
         name: String
         password: String
+    }
+
+    input UpdateLvlUser {
+        name: String
+        level: Float
     }
 
     input GuildInput {
@@ -89,6 +94,7 @@ module.exports = gql`
     type Mutation {
         registerUser(registerUserInput: RegisterUserInput): User!
         loginUser(loginUserInput: LoginUserInput): User!
+        updateLvlUser(updateLvlUserInput: UpdateLvlUser): User!
         deleteUser(ID: ID!): Boolean
         createGuild(guildInput: GuildInput, ownerId: String): Guild!
         deleteGuild(ID: ID!, ownerId: String): Boolean

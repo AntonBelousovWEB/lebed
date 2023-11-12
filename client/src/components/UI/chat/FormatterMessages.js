@@ -10,11 +10,17 @@ export const formatMessageText = (messageText) => {
             if (matches) {
               const colorName = matches[1];
               const content = matches[2];
-              return (
-                <span key={index} style={{ color: colorName }}>
-                  {content}
-                </span>
-              );
+              if(colorName === "img") {
+                return (
+                  <img key={index} src={content} alt="chat_img" style={{pointerEvents: "none"}} />
+                )
+              } else {
+                return (
+                  <span key={index} style={{ color: colorName }}>
+                    {content}
+                  </span>
+                );
+              }
             } else {
               return (
                 <span key={index} style={{ color: 'black' }}>

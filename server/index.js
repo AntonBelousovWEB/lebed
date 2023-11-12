@@ -10,6 +10,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const bodyParser = require("body-parser");
 const util = require("util");
+const WebSocket = require('ws');
+const chokidar = require("chokidar");
+const http = require("http");
 
 dotenv.config();
 
@@ -68,6 +71,33 @@ const server = new ApolloServer({
 server.applyMiddleware({ app });
 
 const httpServer = createServer(app);
+
+// ##########################################################
+
+const wsserver = http.createServer(app);
+const wss = new WebSocket.Server({ server: wsserver });
+const watcher = chokidar.watch(uploadDirectory);
+
+wss.on('connection', (ws) => {
+  ws.on('message', (message) => {
+    if (message === 'folderChange') {
+      ws.send('Folder contents have changed.');
+    }
+  });
+});
+
+watcher.on("change", () => {
+  const filePath = path.join(uploadDirectory, "blob.txt");
+  if (filePath.endsWith("blob.txt")) {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send('folderChange');
+      }
+    });
+  }
+});
+
+// ##########################################################
 
 mongoose.connect(MONGODB, { useNewUrlParser: true })
   .then(() => {

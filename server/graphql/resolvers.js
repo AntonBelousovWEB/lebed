@@ -68,7 +68,9 @@ const resolvers = {
       const token = jwt.sign(
         {
           user_id: createdUser._id,
+          name,
           color,
+          level: 0
         },
         "UNSAFE_STRING",
         {
@@ -94,7 +96,8 @@ const resolvers = {
           {
             user_id: user._id,
             color: user.color,
-            name: user.name
+            name: user.name,
+            level: user.level
           },
           "UNSAFE_STRING",
           {
@@ -116,6 +119,17 @@ const resolvers = {
     deleteUser: async (_, { ID }) => {
       const { deletedCount } = await User.deleteOne({ _id: ID });
       return deletedCount === 1;
+    },
+
+    updateLvlUser: async (_, { updateLvlUserInput: { name, level } }) => {
+      try {
+        const user = await User.findOne({name});
+        const updatedLevel = user.level + level;
+        const result = await User.updateOne({ name }, { $set: { level: updatedLevel } });
+        return result;
+      } catch(err) {
+        throw new Error(err)
+      }
     },
 
     // //////////////////////////////////////////////////////////

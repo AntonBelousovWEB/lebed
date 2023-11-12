@@ -22,3 +22,12 @@ export const LOGIN_USER = gql `
         }
     }
 `
+
+export const UPDATE_LVL = gql `
+    mutation UpdateLvlUser($updateLvlUserInput: UpdateLvlUser) {
+        updateLvlUser(updateLvlUserInput: $updateLvlUserInput) {
+            name
+            level
+        }
+    }
+`

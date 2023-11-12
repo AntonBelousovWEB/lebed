@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { REGISTER_USER } from '../../../mutation/user';
+import { ADD_MESSAGE } from "../../../mutation/addMessage";
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/authContext";
@@ -18,6 +19,7 @@ export function Reg() {
   const [password, setPassword] = React.useState("");
 
   const [regUser] = useMutation(REGISTER_USER);
+  const [addMessage] = useMutation(ADD_MESSAGE);
 
   React.useEffect(() => {
     if(user) {
@@ -54,7 +56,14 @@ export function Reg() {
   
         localStorage.setItem("token", data.registerUser.tokenJWT);
         login(data.registerUser);
-  
+        addMessage({
+          variables: {
+              addMessageInput: {
+                  color: selectedColor.hex,
+                  message: `<green>[ I'm new here, welcome ${name}! ]</green>`,
+              },
+          },
+        })
         navigate("/draw");
       })
       .catch((err) => {

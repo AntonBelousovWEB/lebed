@@ -36,7 +36,13 @@
 }
 
 body {
-  background: url(./img/bg.png) no-repeat;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;    
+  background: url(./img/bg3.svg) no-repeat;
   background-size: cover;
   min-height: 100vh;
 }
@@ -332,7 +338,7 @@ body::-webkit-scrollbar,
   color: rgb(209, 9, 9);
   top: 70px;
   padding: 20px;
-  min-height: 150px;
+  min-height: 210px;
   gap: 30px;
   position: absolute;
   display: flex;
@@ -408,6 +414,7 @@ body::-webkit-scrollbar,
   min-width: 300px;
   overflow: hidden;
   border-radius: 0px 10px 10px 0px;
+  z-index: 3;
 }
 
 .message-list {
@@ -515,11 +522,13 @@ body::-webkit-scrollbar,
   align-items: center;
   height: 40px;
   border-radius: 5px;
+  z-index: 4;
+  cursor: pointer;
 }
 
 .noti-box {
   position: absolute;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(10px);
   background-color: #a3a3a38a;
   top: 50px;
   right: 0;
@@ -638,4 +647,18 @@ body::-webkit-scrollbar,
   font-family: 'Montserrat', sans-serif;
   letter-spacing: 1px;
   border: 2px solid #000;
+}
+
+.progress_lvl {
+  max-width: 50px;
+}
+
+.progress_lvl::-webkit-progress-bar {
+  background-color: rgb(104, 104, 104);
+  height: 5px;
+  margin-top: 7px;
+}
+
+.progress_lvl::-webkit-progress-value {
+  background-color: rgb(197, 255, 142);
 }
