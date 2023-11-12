@@ -1,1 +1,0 @@
-{"user":{"user_id":"64c12aeff39f134d2671a811","color":"#0048BA","name":"Hello","level":31.380550000000195,"iat":1699803836,"exp":1699811036},"position":{"ePost":{"clientX":968,"clientY":182}}}
