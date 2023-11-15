@@ -122,22 +122,23 @@ function Paint() {
       <Notify />
       <h1>Lebed</h1>
       <div className="Errors">{errors.toString()}</div>
-      {users && users ? (
-        users.position.ePost && users.user ? (
-          <div className='helloworldmyelem' key={users.user.id} style={{ 
-            position: "absolute", 
-            left: users.position.ePost.clientX, 
-            top: users.position.ePost.clientY + 100,
-            backgroundColor: users.user.color,
-            zIndex: "1" }}>
-            {users.user.name}
+      {users && Object.values(users).map((userObj) => (
+        userObj.position.ePost && userObj.user ? (
+          <div
+            className='helloworldmyelem'
+            key={userObj.user.user_id}
+            style={{
+              position: "absolute",
+              left: userObj.position.ePost.clientX,
+              top: userObj.position.ePost.clientY + 100,
+              backgroundColor: userObj.user.color,
+              zIndex: "1"
+            }}
+          >
+            {userObj.user.name}
           </div>
-        ) : (
-          null
-        )
-      ) : (
-        null
-      )}
+        ) : null
+      ))}
       <div className="draw-area" style={{ 
           overflowX: isScrolling ? "scroll" : "hidden" 
         }}>

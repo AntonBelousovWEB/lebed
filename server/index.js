@@ -54,8 +54,38 @@ app.post("/upload", async (req, res) => {
 
   try {
     await writeFileAsync(filePath, textToWrite);
-    const userPositionData = { user, position };
-    fs.writeFileSync(usersFilePath, JSON.stringify(userPositionData));
+
+    // Чтение текущего содержимого файла usersFilePath
+    let usersData = {};
+
+    if (fs.existsSync(usersFilePath)) {
+      const usersFileContent = fs.readFileSync(usersFilePath, "utf8");
+
+      // Проверка, что файл не пустой
+      if (usersFileContent.trim() !== "") {
+        // Попытка преобразования содержимого файла в объект
+        try {
+          usersData = JSON.parse(usersFileContent);
+        } catch (parseError) {
+          console.error("Error parsing users file content:", parseError);
+          res.sendStatus(500);
+          return;
+        }
+      }
+    }
+
+    // Проверка наличия пользователя с тем же user_id
+    if (usersData[user.user_id]) {
+      // Если пользователь уже существует, обновите его позицию
+      usersData[user.user_id].position = position;
+    } else {
+      // Если пользователя нет, добавьте его
+      usersData[user.user_id] = { user, position };
+    }
+
+    // Запись обновленных данных в файл
+    fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
+
     res.sendStatus(200);
   } catch (error) {
     console.error("Failed to write text to file:", error);
