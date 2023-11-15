@@ -10,9 +10,11 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const bodyParser = require("body-parser");
 const util = require("util");
-const WebSocket = require('ws');
+// const WebSocket = require('ws');
+// const chokidar = require("chokidar");
+// const http = require("http");
+const expressWs = require("express-ws");
 const chokidar = require("chokidar");
-const http = require("http");
 
 dotenv.config();
 
@@ -23,16 +25,16 @@ const resolvers = require("./graphql/resolvers");
 
 const usersFilePath = path.join("./uploads/drawingUsers", "users.txt");
 const uploadDirectory = path.join(__dirname, "uploads");
+const filePath = path.join(uploadDirectory, "blob.txt");
 
 const writeFileAsync = util.promisify(fs.writeFile);
 const app = express();
+expressWs(app);
 app.use(express.static(path.join(__dirname, "uploads")));
 app.use(bodyParser.text({ type: "text/plain", limit: "50mb" }));
 app.use(cors());
 
 app.get("/download", (req, res) => {
-  const filePath = path.join(uploadDirectory, "blob.txt");
-
   if (fs.existsSync(filePath)) {
     const data = {
       Canvas: fs.readFileSync(filePath, "utf8"),
@@ -50,20 +52,13 @@ app.use(express.static("public"));
 app.post("/upload", async (req, res) => {
   const { user, position, dataURL } = JSON.parse(req.body);
   const textToWrite = dataURL;
-  const filePath = path.join(uploadDirectory, "blob.txt");
 
   try {
     await writeFileAsync(filePath, textToWrite);
-
-    // Чтение текущего содержимого файла usersFilePath
     let usersData = {};
-
     if (fs.existsSync(usersFilePath)) {
       const usersFileContent = fs.readFileSync(usersFilePath, "utf8");
-
-      // Проверка, что файл не пустой
       if (usersFileContent.trim() !== "") {
-        // Попытка преобразования содержимого файла в объект
         try {
           usersData = JSON.parse(usersFileContent);
         } catch (parseError) {
@@ -73,19 +68,12 @@ app.post("/upload", async (req, res) => {
         }
       }
     }
-
-    // Проверка наличия пользователя с тем же user_id
     if (usersData[user.user_id]) {
-      // Если пользователь уже существует, обновите его позицию
       usersData[user.user_id].position = position;
     } else {
-      // Если пользователя нет, добавьте его
       usersData[user.user_id] = { user, position };
     }
-
-    // Запись обновленных данных в файл
     fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
-
     res.sendStatus(200);
   } catch (error) {
     console.error("Failed to write text to file:", error);
@@ -98,36 +86,21 @@ const server = new ApolloServer({
   resolvers,
 });
 
+app.ws("/blob", (ws, req) => {
+  ws.send("Успешное Подключение");
+  const watcher = chokidar.watch(filePath);
+  watcher.on("change", () => {
+    console.log("File changed");
+    ws.send("fileChanged");
+  });
+  ws.on("close", () => {
+    watcher.close();
+  });
+});
 server.applyMiddleware({ app });
 
 const httpServer = createServer(app);
-
-// ##########################################################
-
-const wsserver = http.createServer(app);
-const wss = new WebSocket.Server({ server: wsserver });
-const watcher = chokidar.watch(uploadDirectory);
-
-wss.on('connection', (ws) => {
-  ws.on('message', (message) => {
-    if (message === 'folderChange') {
-      ws.send('Folder contents have changed.');
-    }
-  });
-});
-
-watcher.on("change", () => {
-  const filePath = path.join(uploadDirectory, "blob.txt");
-  if (filePath.endsWith("blob.txt")) {
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send('folderChange');
-      }
-    });
-  }
-});
-
-// ##########################################################
+app.listen(5000)
 
 mongoose.connect(MONGODB, { useNewUrlParser: true })
   .then(() => {

@@ -29,18 +29,18 @@ function Paint() {
 
   const { user } = React.useContext(AuthContext);
 
-  const wsRef = useRef(null);
-
   useEffect(() => {
-    wsRef.current = new WebSocket('ws://localhost:3001');
-    console.log(wsRef)
-    wsRef.current.onmessage = (event) => {
-      if (event.data === 'folderChange') {
+    const ws = new WebSocket('ws://localhost:5000/blob');
+    ws.onopen = () => {
+      console.log("Connected to server");
+    };
+    ws.onmessage = (event) => {
+      if (event.data === 'fileChanged') {
         get(canvasRef, setUsers);
       }
     };
-    return () => {
-      wsRef.current.close();
+    ws.onclose = (event) => {
+      console.log("Disconnected from server:", event.code, event.reason);
     };
   }, []);
 
