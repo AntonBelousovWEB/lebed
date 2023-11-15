@@ -1,7 +1,11 @@
 import React from "react";
 import { AuthContext } from "../../context/authContext";
-import { GET_ALL_USERS } from "../../query/user";
+import { GET_ALL_USERS } from "../../server/query/user";
+import { useSubscription } from "@apollo/client";
+import { LEVEL_UPDATED } from "../../server/subscription/user";
 import { useQuery } from "@apollo/client";
+import { useDispatch } from "react-redux";
+import { addLevel } from "../../store/actions";
 import useToggleState from "../../hooks/useToggleState";
 import Chat from "../UI/chat/Chat";
 
@@ -9,27 +13,41 @@ const Menu = ({ handleScroll }) => {
   const { user, logout } = React.useContext(AuthContext);
   const [users, setUsers] = React.useState([]);
   const [lvl, setLvl] = React.useState(null);
+  const [curLvl, setCurLvl] = React.useState(null);
+  const dispatch = useDispatch()
 
   const { refetch: refetchUsers } = useQuery(GET_ALL_USERS);
+  const { refetch: refetchUserOfName} = useQuery(GET_ALL_USERS, {
+    variables: { name: user && user.name },
+  });
 
   const { state: viewUser, toggleState: toggleViewUser, ref: userRef } = useToggleState(true);
   const { state: viewTop, toggleState: toggleViewTop, ref: topRef } = useToggleState(true);
   const { state: viewChat, toggleState: toggleViewChat, ref: chatRef } = useToggleState(true);
   const { state: viewBurger, toggleState: toggleViewBurger, ref: burgerRef } = useToggleState(true);
 
+  useSubscription(LEVEL_UPDATED, {
+    onData: ({ data }) => {
+        const lvl = data.data.levelUpdated;
+        setCurLvl(lvl.level)
+        dispatch(addLevel(curLvl));
+    },
+  });
+
   React.useEffect(() => {
     refetchUsers().then(({ data }) => {
       const sortedUsers = data.getUser.slice().sort((a, b) => b.level - a.level);
       setUsers(sortedUsers);
     });
-  }, [refetchUsers]);
+    refetchUserOfName().then(({ data }) => {
+      setCurLvl(data.getUser[0].level);
+      dispatch(addLevel(curLvl));
+    })
+  }, [refetchUsers, refetchUserOfName, curLvl, dispatch]);
 
   React.useEffect(() => {
-    if(user) {
-      setLvl(Number.isInteger(user.level) ? user.level + 1 : Math.ceil(user.level));
-      console.log(user && user.level)
-    }
-  }, []);
+    setLvl(Number.isInteger(curLvl) ? curLvl + 1 : Math.ceil(curLvl));
+  }, [curLvl]);
 
   return (
     <div className="Menu">
@@ -56,7 +74,7 @@ const Menu = ({ handleScroll }) => {
         <div className="container__menu">
           <label>Level</label>
           <progress className="progress_lvl" 
-            value={user && user.level - lvl + 1} 
+            value={curLvl && curLvl - lvl + 1} 
             max={1} 
           />
           <p>{lvl}</p>
@@ -79,7 +97,7 @@ const Menu = ({ handleScroll }) => {
                   style={{ backgroundColor: user.color }} 
                   className="user__profile-tops">
                 </div>
-                {user.name} - level {user.level}
+                {user.name} - level {Math.floor(user.level)}
               </div>
             ))}
         </div>

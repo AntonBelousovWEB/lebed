@@ -1,9 +1,9 @@
 import React from "react";
 import { useMutation, useSubscription, useQuery } from "@apollo/client";
-import { ADD_MESSAGE } from "../../../mutation/addMessage";
+import { ADD_MESSAGE } from "../../../server/mutation/addMessage";
 import { AuthContext } from "../../../context/authContext";
-import { CHAT_UPDATED } from "../../../subscription/chat";
-import { GET_MESSAGES } from "../../../query/Messages";
+import { CHAT_UPDATED } from "../../../server/subscription/chat";
+import { GET_MESSAGES } from "../../../server/query/Messages";
 import { formatMessageText } from "./FormatterMessages";
 
 export default function Chat({ sidebar }) {

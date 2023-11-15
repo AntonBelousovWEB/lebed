@@ -78,7 +78,7 @@ module.exports = gql`
 
     type Query {
         users(ID: ID!): User!
-        getUser(amount: Int): [User]
+        getUser(amount: Int, name: String): [User]
         guild(ID: ID!): Guild!
         ctxRefUpdate(amount: Int): [CtxRef]
         getMessages(amount: Int): [Message]
@@ -89,6 +89,7 @@ module.exports = gql`
         ctxRefUpdated: CtxRef
         chatUpdated: Message
         postUpdated: Post
+        levelUpdated: User
     }
 
     type Mutation {

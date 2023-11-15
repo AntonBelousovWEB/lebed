@@ -12,6 +12,8 @@ import { setContext } from '@apollo/client/link/context';
 import { AuthProvider } from './context/authContext';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 const httpLink = createHttpLink({
   uri: process.env.REACT_APP_SERVER_LINK,
@@ -56,7 +58,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <AuthProvider>
     <ApolloProvider client={client}>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </ApolloProvider>
   </AuthProvider>
 );

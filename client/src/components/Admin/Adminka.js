@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ADD_POST } from "../../mutation/addPost";
+import { ADD_POST } from "../../server/mutation/addPost";
 import { useMutation } from "@apollo/client";
 
 export default function Adminka() {

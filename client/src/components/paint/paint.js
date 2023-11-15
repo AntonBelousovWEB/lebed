@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation, useSubscription } from '@apollo/client';
-import { CTX_REF_UPDATED } from '../../subscription/ref';
+import { useMutation } from '@apollo/client';
 import Menu from "./Menu";
 import { AuthContext } from '../../context/authContext';
-import { CREATE_REF } from '../../mutation/ref';
+import { CREATE_REF } from '../../server/mutation/ref';
 import { post, get, startDrawing, endDrawing, draw } from './canvasUtils';
 import Chat from '../UI/chat/Chat';
 import Notify from './Notify';
-import { UPDATE_LVL } from '../../mutation/user';
+import { UPDATE_LVL } from '../../server/mutation/user';
+import { useSelector } from 'react-redux';
 
 function Paint() {
   const canvasRef = useRef(null);
@@ -25,6 +25,7 @@ function Paint() {
   const [createRef] = useMutation(CREATE_REF);
   const [updateLvl] = useMutation(UPDATE_LVL)
   const navigate = useNavigate();
+  const curLvl = useSelector(state => state.curLvl);
 
   const { user } = React.useContext(AuthContext);
 
@@ -38,7 +39,6 @@ function Paint() {
         get(canvasRef, setUsers);
       }
     };
-
     return () => {
       wsRef.current.close();
     };
@@ -95,6 +95,7 @@ function Paint() {
         setError, 
         token, 
         user, 
+        curLvl,
         ePost
       )
     );

@@ -19,9 +19,10 @@ const resolvers = {
     users: async (_, { ID }) => {
       return await User.findById(ID);
     },
-    getUser: async (_, { amount }) => {
-      return await User.find().limit(amount);
-    },
+    getUser: async (_, { amount, name }) => {
+      const query = name ? User.find({ name }) : User.find();
+      return await query.limit(amount).exec();
+    },    
     guild: async (_, { ID }) => {
       return await Guild.findById(ID);
     },
@@ -126,6 +127,9 @@ const resolvers = {
         const user = await User.findOne({name});
         const updatedLevel = user.level + level;
         const result = await User.updateOne({ name }, { $set: { level: updatedLevel } });
+        if (result) {
+          pubsub.publish('LEVEL_UPDATED', { levelUpdated: { level: updatedLevel }});
+        }
         return result;
       } catch(err) {
         throw new Error(err)
@@ -287,6 +291,9 @@ const resolvers = {
     },
     postUpdated: {
       subscribe: () => pubsub.asyncIterator(['POST_UPDATED']),
+    },
+    levelUpdated: {
+      subscribe: () => pubsub.asyncIterator(['LEVEL_UPDATED']),
     }
   },
 };

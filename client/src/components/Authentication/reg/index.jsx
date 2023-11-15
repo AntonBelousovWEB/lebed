@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
-import { REGISTER_USER } from '../../../mutation/user';
-import { ADD_MESSAGE } from "../../../mutation/addMessage";
+import { REGISTER_USER } from '../../../server/mutation/user';
+import { ADD_MESSAGE } from "../../../server/mutation/addMessage";
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/authContext";

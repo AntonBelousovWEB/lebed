@@ -1,5 +1,5 @@
 import React from "react"
-import { LOGIN_USER } from "../../../mutation/user";
+import { LOGIN_USER } from "../../../server/mutation/user";
 import { AuthContext } from "../../../context/authContext";
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate } from "react-router-dom";

@@ -101,6 +101,7 @@ h1::before {
   margin: auto;
   margin-top: 10px;
   font-family: 'Montserrat', sans-serif;
+  z-index: 2;
 }
 
 body::-webkit-scrollbar,

@@ -1,8 +1,8 @@
 import React from "react";
 import useToggleState from "../../hooks/useToggleState";
 import { useQuery, useSubscription } from "@apollo/client";
-import { GET_POST } from "../../query/Posts";
-import { POST_UPDATED } from "../../subscription/post";
+import { GET_POST } from "../../server/query/Posts";
+import { POST_UPDATED } from "../../server/subscription/post";
 
 export default function Notify() {
     const { state: viewNoti, toggleState: toggleViewNoti, ref: notiRef } = useToggleState(true);

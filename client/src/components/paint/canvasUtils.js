@@ -1,4 +1,4 @@
-export function post(canvasRef, createRef, updateLvl, setError, token, user, ePost) {
+export function post(canvasRef, createRef, updateLvl, setError, token, user, curLvl, ePost) {
     const postLogic = async () => {
       const canvas = canvasRef.current;
       const dataURL = canvas.toDataURL(0.1);
@@ -47,7 +47,7 @@ export function post(canvasRef, createRef, updateLvl, setError, token, user, ePo
         variables: {
           updateLvlUserInput: {
             name: user.name,
-            level: user.level / ((user.level * user.level) * 1000) 
+            level: Math.floor(curLvl) / (Math.floor(curLvl * curLvl) * 1000)
           }
         }
       }).catch((err) => {
