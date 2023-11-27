@@ -76,6 +76,11 @@ module.exports = gql`
         message: String!
     }
 
+    input KeyInput {
+        secretKey: String!
+        aesKey: String!
+    }
+
     type Query {
         users(ID: ID!): User!
         getUser(amount: Int, name: String): [User]
@@ -93,7 +98,7 @@ module.exports = gql`
     }
 
     type Mutation {
-        registerUser(registerUserInput: RegisterUserInput): User!
+        registerUser(registerUserInput: RegisterUserInput, key: KeyInput): User
         loginUser(loginUserInput: LoginUserInput): User!
         updateLvlUser(updateLvlUserInput: UpdateLvlUser): User!
         deleteUser(ID: ID!): Boolean

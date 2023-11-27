@@ -10,9 +10,6 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const bodyParser = require("body-parser");
 const util = require("util");
-// const WebSocket = require('ws');
-// const chokidar = require("chokidar");
-// const http = require("http");
 const expressWs = require("express-ws");
 const chokidar = require("chokidar");
 
@@ -90,17 +87,14 @@ app.ws("/blob", (ws, req) => {
   ws.send("Успешное Подключение");
   const watcher = chokidar.watch(filePath);
   watcher.on("change", () => {
-    console.log("File changed");
     ws.send("fileChanged");
   });
-  ws.on("close", () => {
-    watcher.close();
-  });
 });
+app.listen(5000)
+
 server.applyMiddleware({ app });
 
 const httpServer = createServer(app);
-app.listen(5000)
 
 mongoose.connect(MONGODB, { useNewUrlParser: true })
   .then(() => {

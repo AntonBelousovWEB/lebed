@@ -10,9 +10,12 @@ const { ApolloError, UserInputError } = require('apollo-server');
 const NodeRSA = require('node-rsa');
 const dotenv = require('dotenv');
 const key = new NodeRSA({ b: 512 });
+const crypto = require('crypto');
+const forge = require('node-forge');
 
 dotenv.config();
 const pubsub = new PubSub();
+const secret_key = process.env.SECRET_KEY;
 
 const resolvers = {
   Query: {
@@ -45,9 +48,37 @@ const resolvers = {
     }
   },
   Mutation: {
-    registerUser: async (_, { registerUserInput: { name, password, color } }) => {
-      const existingUser = await User.findOne().or([{ name }, { color }]);
+    registerUser: async (_, { registerUserInput: { name, password, color }, key }) => {
+      const privateKey = require('fs').readFileSync('./keys/private_key.pem', 'utf8');
+      const rsaPrivateKey = {
+        key: privateKey,
+        passphrase: process.env.SECRET_PHRASE
+      };
     
+      const decryptedMessage = crypto.privateDecrypt(
+        rsaPrivateKey,
+        Buffer.from(key.aesKey, 'base64'),
+      );
+
+      const decryptData = (encryptedData) => {
+        try {
+          const aesKey = forge.util.createBuffer(decryptedMessage, 'binary');
+          const encryptedBytes = forge.util.decode64(encryptedData);
+          const decipher = forge.cipher.createDecipher('AES-CTR', aesKey.data);
+          decipher.start({ iv: forge.random.getBytesSync(16) });
+          decipher.update(forge.util.createBuffer(encryptedBytes));
+          decipher.finish();
+          // const decryptedData = decipher.output.toString('utf8');
+          console.log(decipher.output.data.toString('utf8'));
+        } catch (error) {
+          console.error('Decryption error:', error.message);
+          throw error;
+        }
+      };      
+
+      decryptData(key.secretKey)
+
+      const existingUser = await User.findOne().or([{ name }, { color }]);
       if (existingUser) {
         if (existingUser.name === name) {
           throw new Error(`The name ${name} is taken!`);
@@ -80,13 +111,15 @@ const resolvers = {
       );
     
       createdUser.tokenJWT = token;
-    
-      const res = await createdUser.save();
-    
-      return {
-        id: res.id,
-        ...res._doc,
-      };
+      if(key === secret_key) {
+        const res = await createdUser.save();
+        return {
+          id: res.id,
+          ...res._doc,
+        };
+      } else {
+        throw new Error(`Incorrect key!`);
+      }
     },    
 
     loginUser: async (_, { loginUserInput: { name, password } }) => {
@@ -107,7 +140,7 @@ const resolvers = {
         );
     
         user.tokenJWT = token;
-    
+        await User.updateOne({ name }, { $set: { tokenJWT: token } });
         return {
           id: user.id,
           ...user._doc,

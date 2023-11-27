@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const REGISTER_USER = gql `
-    mutation Mutation($registerUserInput: RegisterUserInput) {
-        registerUser(registerUserInput: $registerUserInput) {
+    mutation Mutation($registerUserInput: RegisterUserInput, $key: KeyInput) {
+        registerUser(registerUserInput: $registerUserInput, key: $key) {
             color
             guild
             level
