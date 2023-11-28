@@ -78,7 +78,7 @@ module.exports = gql`
 
     input KeyInput {
         secretKey: String!
-        aesKey: String!
+        id: String!
     }
 
     type Query {

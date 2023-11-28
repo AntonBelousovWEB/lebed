@@ -5,80 +5,31 @@ import { ADD_MESSAGE } from "../../../server/mutation/addMessage";
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/authContext";
-import forge from 'node-forge';
+import { encryptData } from "../../encrypt/funcs";
 
 export function Reg() {
   const [datas, setDatas] = React.useState(null);
   const [selectedColor, setSelectedColor] = React.useState(null);
   const [view, setView] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [aesKey, setAesKey] = React.useState("");
-  const [enSercetKey, setEnSecretKey] = React.useState("");
+  const [key, setKey] = React.useState("");
+  const [reqId, setReqId] = React.useState(0);
+  const [enReqId, setEnReqId] = React.useState("");
   
   const { login, user } = React.useContext(AuthContext);
   const navigate = useNavigate();
 
   const [name, setName] = React.useState("");
   const [password, setPassword] = React.useState("");
-
-  const ENCRYPTION_AES_ENC_KEY_OPTIONS = {
-    iterations: 10000,
-    keySize: 32,
-  };
   
-  const generateAesKey = () => {
-    const aesSalt = forge.random.getBytesSync(16);
-    const keyPassPhrase = forge.random.getBytesSync(16);
-    const aesKey = forge.pkcs5.pbkdf2(
-      keyPassPhrase,
-      aesSalt,
-      ENCRYPTION_AES_ENC_KEY_OPTIONS.iterations,
-      ENCRYPTION_AES_ENC_KEY_OPTIONS.keySize,
-    );
-    encryptAesKey(process.env.REACT_APP_PUBLIC_KEY, aesKey);
-    encryptData(process.env.REACT_APP_SECRET_KEY, aesKey)
-  };    
-
-  const encryptAesKey = (receivedPublicKeyPem, aesKey) => {
-    try {
-      if (!aesKey) {
-        console.error('AES key is null or undefined');
-        return;
-      }
-      const publicKey = forge.pki.publicKeyFromPem(receivedPublicKeyPem);
-      const encryptedAesKey = publicKey.encrypt(aesKey, 'RSA-OAEP');
-      setAesKey(forge.util.encode64(encryptedAesKey));
-    } catch (error) {
-      console.error('Encryption error: ', error.message);
-      throw error;
-    }
-  };    
-
-  const encryptData = (data, aesKey) => {
-    try {
-      const dataBytes = forge.util.createBuffer(data, 'utf8');
-      const cipher = forge.cipher.createCipher('AES-CTR', aesKey);
-  
-      cipher.start({ iv: forge.random.getBytesSync(16) });
-      cipher.update(dataBytes);
-      cipher.finish();
-
-      const encryptedBytes = cipher.output;
-      const encryptedData = forge.util.encode64(encryptedBytes.data);
-
-      setEnSecretKey(encryptedData);
-    } catch (error) {
-      console.error('Encryption error:', error.message);
-      throw error;
-    }
-  };  
-
   const [regUser] = useMutation(REGISTER_USER, {
-    variables: { key: {
-      secretKey: enSercetKey,
-      aesKey: aesKey
-    } },
-  });
+    variables: {
+      key: {
+        secretKey: key,
+        id: enReqId,
+      },
+    },
+  });  
 
   const [addMessage] = useMutation(ADD_MESSAGE);
 
@@ -129,7 +80,6 @@ export function Reg() {
       })
       .catch((err) => {
         setError(err.toString());
-        console.log(err)
       });
   };
 
@@ -151,7 +101,6 @@ export function Reg() {
 
   return (
     <div className="reg__page">
-      <button style={{color: "#fff"}} onClick={() => generateAesKey()}>click</button>
       {datas ? (
         <div className="registration__form">
           <div className="Errors">{error.toString()}</div>
@@ -180,7 +129,23 @@ export function Reg() {
                   className="button__view"
                 ></button>
               </div>
-              <button onClick={(e) => registerUser(e)} className="reg__bttn">Register</button>
+              <button onClick={(e) => {
+                e.preventDefault();
+                encryptData(
+                  process.env.REACT_APP_PUBLIC_KEY,
+                  process.env.REACT_APP_SECRET_KEY,
+                  setKey
+                );
+                encryptData(
+                  process.env.REACT_APP_PUBLIC_KEY,
+                  JSON.stringify(reqId),
+                  setEnReqId,
+                  setReqId
+                );
+                setTimeout(() => {
+                  registerUser(e);
+                }, 100);
+              }} className="reg__bttn">Register</button>
               <Link to="/auth">Sign in</Link>
             </form>
           </div>
@@ -209,7 +174,11 @@ export function Reg() {
                       }}
                       onClick={() => handleColorClick(color)}
                     ></div>
-                    <p style={{ marginTop: "10px", textAlign: "center", fontFamily: "'Montserrat', sans-serif" }}>
+                    <p style={{ 
+                      marginTop: "10px", 
+                      textAlign: "center", 
+                      fontFamily: "'Montserrat', sans-serif" 
+                    }}>
                       {color.hex}
                     </p>
                   </div>
