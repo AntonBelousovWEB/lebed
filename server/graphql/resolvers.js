@@ -6,15 +6,16 @@ const Post = require('../models/Post')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { PubSub } = require('graphql-subscriptions');
-const { ApolloError, UserInputError } = require('apollo-server');
-const NodeRSA = require('node-rsa');
+const { ApolloError } = require('apollo-server');
 const dotenv = require('dotenv');
-const key = new NodeRSA({ b: 512 });
+const crypto = require('crypto');
 const { decryptData } = require('../decrypt/funcs');
 
 dotenv.config();
 const pubsub = new PubSub();
 const secret_key = process.env.SECRET_KEY;
+const privateKey = require('fs').readFileSync('./keys/private_key.pem', 'utf8');
+const publicKey = require('fs').readFileSync('./keys/public_key.pem', 'utf8');
 
 const resolvers = {
   Query: {
@@ -33,12 +34,22 @@ const resolvers = {
     },
     getMessages: async (_, { amount }) => {
       const messages = await Message.find().limit(amount);
+      
+      const rsaPrivateKey = {
+        key: privateKey,
+        passphrase: process.env.SECRET_PHRASE
+      };
+      
       const decryptedMessages = messages.map(message => {
-          const decryptedMessage = key.decrypt(message.message, 'utf8');
-          return {
-              ...message._doc,
-              message: decryptedMessage,
-          };
+        const decryptedMessage = crypto.privateDecrypt(
+          rsaPrivateKey,
+          Buffer.from(message.message, 'base64'),
+        ).toString('utf8');
+
+        return {
+          ...message._doc,
+          message: decryptedMessage,
+        };
       });   
       return decryptedMessages;
     },  
@@ -242,8 +253,10 @@ const resolvers = {
     }, 
     async addMessage(_, { addMessageInput: { color, message } }) {
       try {
-        const encryptedMessage = key.encrypt(message, 'base64');
-        const decryptedMessage = key.decrypt(encryptedMessage, 'utf8');
+        const encryptedMessage = crypto.publicEncrypt({
+          key: publicKey,
+          padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        }, Buffer.from(message, 'utf8')).toString('base64');
 
         if(message.length > 150 || message.length < 1) {
           throw new Error('Error send Message!');
@@ -257,7 +270,7 @@ const resolvers = {
         const res = await addMessage.save();
     
         if (res) {
-          pubsub.publish('CHAT_UPDATED', { chatUpdated: { ...res, color, message: decryptedMessage }});
+          pubsub.publish('CHAT_UPDATED', { chatUpdated: { ...res, color, message: message }});
         }
 
         return {
