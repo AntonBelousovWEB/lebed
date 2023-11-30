@@ -5,7 +5,7 @@ import { useSubscription } from "@apollo/client";
 import { LEVEL_UPDATED } from "../../server/subscription/user";
 import { useQuery } from "@apollo/client";
 import { useDispatch } from "react-redux";
-import { addLevel } from "../../store/actions";
+import { addLevel } from "../../store/actions/Level";
 import useToggleState from "../../hooks/useToggleState";
 import Chat from "../UI/chat/Chat";
 

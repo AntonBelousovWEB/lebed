@@ -1,17 +1,33 @@
+import { useState } from 'react';
 import forge from 'node-forge';
 
-export const encryptData = (receivedPublicKeyPem, data, setData, setId = null) => {
+const useEncryption = (receivedPublicKeyPem) => {
+  const [reqId, setReqId] = useState(0);
+
+  const encryptData = (data) => {
     try {
       if (!data) {
         console.error('Data is null or undefined');
         return;
       }
-      setId && setId((prev) => prev + 1);
+
       const publicKey = forge.pki.publicKeyFromPem(receivedPublicKeyPem);
       const encryptedData = publicKey.encrypt(data, 'RSA-OAEP');
-      setData(forge.util.encode64(encryptedData));
+      const encryptedId = publicKey.encrypt(JSON.stringify(reqId), 'RSA-OAEP');
+      
+      setReqId(prevId => prevId + 1);
+
+      return {
+        data: forge.util.encode64(encryptedData),
+        id: forge.util.encode64(encryptedId),
+      };
     } catch (error) {
       console.error('Encryption error: ', error.message);
       throw error;
     }
+  };
+
+  return { encryptData };
 };
+
+export default useEncryption;

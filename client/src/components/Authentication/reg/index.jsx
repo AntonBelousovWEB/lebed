@@ -5,16 +5,15 @@ import { ADD_MESSAGE } from "../../../server/mutation/addMessage";
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/authContext";
-import { encryptData } from "../../encrypt/funcs";
+import useEncryption from "../../encrypt/funcs";
 
 export function Reg() {
   const [datas, setDatas] = React.useState(null);
   const [selectedColor, setSelectedColor] = React.useState(null);
   const [view, setView] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [key, setKey] = React.useState("");
-  const [reqId, setReqId] = React.useState(0);
-  const [enReqId, setEnReqId] = React.useState("");
+  const [enData, setEnData] = React.useState(null);
+  const { encryptData } = useEncryption(process.env.REACT_APP_PUBLIC_KEY);
   
   const { login, user } = React.useContext(AuthContext);
   const navigate = useNavigate();
@@ -25,8 +24,8 @@ export function Reg() {
   const [regUser] = useMutation(REGISTER_USER, {
     variables: {
       key: {
-        secretKey: key,
-        id: enReqId,
+        secretKey: enData && enData.data,
+        id: enData && enData.id,
       },
     },
   });  
@@ -52,7 +51,11 @@ export function Reg() {
 
   const registerUser = (e) => {
     e.preventDefault();
-  
+
+    const encryptedData = encryptData(process.env.REACT_APP_SECRET_KEY);
+    setEnData(encryptedData);
+    console.log(enData)
+
     regUser({
       variables: {
         registerUserInput: {
@@ -129,23 +132,11 @@ export function Reg() {
                   className="button__view"
                 ></button>
               </div>
-              <button onClick={(e) => {
-                e.preventDefault();
-                encryptData(
-                  process.env.REACT_APP_PUBLIC_KEY,
-                  process.env.REACT_APP_SECRET_KEY,
-                  setKey
-                );
-                encryptData(
-                  process.env.REACT_APP_PUBLIC_KEY,
-                  JSON.stringify(reqId),
-                  setEnReqId,
-                  setReqId
-                );
-                setTimeout(() => {
-                  registerUser(e);
-                }, 100);
-              }} className="reg__bttn">Register</button>
+              <button 
+                onClick={(e) => registerUser(e)} 
+                className="reg__bttn">
+                  Register
+              </button>
               <Link to="/auth">Sign in</Link>
             </form>
           </div>
