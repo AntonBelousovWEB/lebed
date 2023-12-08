@@ -54,7 +54,6 @@ export function Reg() {
 
     const encryptedData = encryptData(process.env.REACT_APP_SECRET_KEY);
     setEnData(encryptedData);
-    console.log(enData)
 
     regUser({
       variables: {

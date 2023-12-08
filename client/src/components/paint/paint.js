@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import Menu from "./Menu";
 import { AuthContext } from '../../context/authContext';
-import { CREATE_REF } from '../../server/mutation/ref';
 import { post, get, startDrawing, endDrawing, draw } from './canvasUtils';
 import Chat from '../UI/chat/Chat';
 import Notify from './Notify';
@@ -19,10 +18,8 @@ function Paint() {
   const [isMenuFixed, setIsMenuFixed] = useState(false);
   // const [canvasHeight, setCanvasHeight] = useState(1000);
   const [errors, setError] = React.useState("");
-  const [token, setToken] = React.useState("");
   const [users, setUsers] = React.useState(null);
   const [ePost, setEPost] = React.useState(null)
-  const [createRef] = useMutation(CREATE_REF);
   const [updateLvl] = useMutation(UPDATE_LVL)
   const navigate = useNavigate();
   const curLvl = useSelector(state => state.curLvl);
@@ -48,7 +45,6 @@ function Paint() {
     if (!user) {
       return navigate('/');
     }
-    setToken(localStorage.getItem('token'))
     get(canvasRef, setUsers);
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -89,11 +85,9 @@ function Paint() {
       ctxRef, 
       setEPost, 
       () => post(
-        canvasRef, 
-        createRef, 
+        canvasRef,
         updateLvl,
-        setError, 
-        token, 
+        setError,
         user, 
         curLvl,
         ePost

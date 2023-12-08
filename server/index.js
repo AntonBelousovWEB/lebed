@@ -31,51 +31,57 @@ app.use(express.static(path.join(__dirname, "uploads")));
 app.use(bodyParser.text({ type: "text/plain", limit: "50mb" }));
 app.use(cors());
 
-app.get("/download", (req, res) => {
-  if (fs.existsSync(filePath)) {
-    const data = {
-      Canvas: fs.readFileSync(filePath, "utf8"),
-      Users: fs.readFileSync(usersFilePath, "utf8")
+app.ws("/download", (ws, req) => {
+    try {
+      ws.on("message", () => {
+        if (fs.existsSync(filePath)) {
+          const data = {
+            Canvas: fs.readFileSync(filePath, "utf8"),
+            Users: fs.readFileSync(usersFilePath, "utf8")
+          }
+          ws.send(JSON.stringify(data));
+        } else {
+          ws.send(JSON.stringify({ error: "Файл не найден" }));
+        }
+      });
+    } catch(err) {
+      console.log(err)
     }
-    res.setHeader("Content-Type", "text/plain");
-    res.send(data);
-  } else {
-    res.status(404).send("Файл не найден");
-  }
 });
 
 app.use(express.static("public"));
 
-app.post("/upload", async (req, res) => {
-  const { user, position, dataURL } = JSON.parse(req.body);
-  const textToWrite = dataURL;
+app.ws("/upload", async (ws, req) => {
+  ws.on("message", async (message) => {
+    try {
+      const { user, position, dataURL } = JSON.parse(message);
+      const textToWrite = dataURL;
 
-  try {
-    await writeFileAsync(filePath, textToWrite);
-    let usersData = {};
-    if (fs.existsSync(usersFilePath)) {
-      const usersFileContent = fs.readFileSync(usersFilePath, "utf8");
-      if (usersFileContent.trim() !== "") {
-        try {
-          usersData = JSON.parse(usersFileContent);
-        } catch (parseError) {
-          console.error("Error parsing users file content:", parseError);
-          res.sendStatus(500);
-          return;
+      await writeFileAsync(filePath, textToWrite);
+      let usersData = {};
+      if (fs.existsSync(usersFilePath)) {
+        const usersFileContent = fs.readFileSync(usersFilePath, "utf8");
+        if (usersFileContent.trim() !== "") {
+          try {
+            usersData = JSON.parse(usersFileContent);
+          } catch (parseError) {
+            console.error("Error parsing users file content:", parseError);
+            res.sendStatus(500);
+            return;
+          }
         }
       }
+      if (usersData[user.user_id]) {
+        usersData[user.user_id].position = position;
+      } else {
+        usersData[user.user_id] = { user, position };
+      }
+      fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
+    } catch (error) {
+      console.error("Failed to write text to file:", error);
+      res.sendStatus(500);
     }
-    if (usersData[user.user_id]) {
-      usersData[user.user_id].position = position;
-    } else {
-      usersData[user.user_id] = { user, position };
-    }
-    fs.writeFileSync(usersFilePath, JSON.stringify(usersData));
-    res.sendStatus(200);
-  } catch (error) {
-    console.error("Failed to write text to file:", error);
-    res.sendStatus(500);
-  }
+  });
 });
 
 const server = new ApolloServer({

@@ -1,4 +1,6 @@
-export function post(canvasRef, createRef, updateLvl, setError, token, user, curLvl, ePost) {
+const wsPost = new WebSocket('ws://192.168.1.248:5000/upload');
+
+export function post(canvasRef, updateLvl, setError, user, curLvl, ePost) {
     const postLogic = async () => {
       const canvas = canvasRef.current;
       const dataURL = canvas.toDataURL(0.1);
@@ -7,14 +9,14 @@ export function post(canvasRef, createRef, updateLvl, setError, token, user, cur
       const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
       const ab = new ArrayBuffer(byteString.length);
       const ia = new Uint8Array(ab);
-  
+      
       for (let i = 0; i < byteString.length; i++) {
         ia[i] = byteString.charCodeAt(i);
       }
-  
+      
       const blob = new Blob([ab], { type: mimeString });
   
-      const blobURL = URL.createObjectURL(blob);
+      // const blobURL = URL.createObjectURL(blob);
   
       const formData = new FormData();
       formData.append('image', blob);
@@ -28,70 +30,60 @@ export function post(canvasRef, createRef, updateLvl, setError, token, user, cur
       };
   
       try {
-        const response = await fetch('http://192.168.1.248:3000/upload', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain',
-          },
-          body: JSON.stringify(data),
-        });
-  
-        if (!response.ok) {
-          console.error('Failed to upload image');
-        }
+        wsPost.send(JSON.stringify(data));
       } catch (error) {
         console.error('Error uploading image:', error);
       }
 
-      updateLvl({
-        variables: {
-          updateLvlUserInput: {
-            name: user.name,
-            level: Math.floor(curLvl) / (Math.floor(curLvl * curLvl) * 1000)
-          }
-        }
-      }).catch((err) => {
-        setError(err.toString());
-      });
-  
-      createRef({
-        variables: {
-          editCtxRefInput: {
-            dataRef: blobURL,
-            token
-          },
-        },
-      }).catch((err) => {
-        setError(err.toString());
-      });
+      // updateLvl({
+      //   variables: {
+      //     updateLvlUserInput: {
+      //       name: user.name,
+      //       level: Math.floor(curLvl) / (Math.floor(curLvl * curLvl) * 1000)
+      //     }
+      //   }
+      // }).catch((err) => {
+      //   setError(err.toString());
+      // });
     };
     postLogic();
 }
-  
-export function get(canvasRef, Users) {
-  const getLogic = async () => {
-    try {
-      const response = await fetch("http://192.168.1.248:3000/download");
 
-      if (response.status === 200) {
-        const data = await response.json();
-        const canvas = canvasRef.current;
-        Users(JSON.parse(data.Users))
-        const ctx = canvas.getContext('2d');
-        const image = new Image();
-        image.src = data.Canvas;
-        image.onload = () => {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(image, 0, 0);
-        };
+const wsGet = new WebSocket('ws://192.168.1.248:5000/download');
+
+export function get(canvasRef, Users) {
+  try {
+    const sendMessage = (message) => {
+      if (wsGet.readyState === WebSocket.OPEN) {
+        wsGet.send(message);
       } else {
-        console.log("Файл не найден");
+        wsGet.addEventListener('open', () => {
+          wsGet.send(message);
+        });
       }
-    } catch (error) {
-      console.error("Ошибка при загрузке файла:", error);
-    }
-  };
-  getLogic();
+    };
+
+    sendMessage("hello");
+  
+    wsGet.onmessage = (event) => {
+      if (event.data) {
+        const data = JSON.parse(event.data);
+        const canvas = canvasRef.current;
+        if (data.Canvas !== "" && data.Users !== "") {
+          Users(JSON.parse(data.Users));
+          const ctx = canvas.getContext('2d');
+          const image = new Image();
+          image.src = data.Canvas;
+          image.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(image, 0, 0);
+          };
+        };
+      };
+    };
+  } catch (error) {
+    console.error("Ошибка при создании WebSocket:", error);
+  }
 }
   
 export const startDrawing = (e, isScrolling, ctxRef, setIsDrawing) => {
