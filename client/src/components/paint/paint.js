@@ -130,6 +130,11 @@ function Paint() {
             }}
           >
             {userObj.user.name}
+            <div className='badges'>
+              <img className='badge' src='./img/badges/owner.png' alt='badge' />
+              <img className='badge' src='./img/badges/admin.png' alt='badge' />
+              <img className='badge' src='./img/badges/topguild.png' alt='badge' />
+            </div>
           </div>
         ) : null
       ))}

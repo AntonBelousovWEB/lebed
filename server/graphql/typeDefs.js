@@ -8,6 +8,14 @@ module.exports = gql`
         color: String
         level: Float
         guild: String
+        badges: Badges
+    }
+
+    type Badges {
+        owner: Boolean
+        admin: Boolean
+        topOne: Boolean
+        topGuild: Boolean
     }
 
     type Guild {

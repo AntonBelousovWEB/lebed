@@ -111,7 +111,7 @@ const resolvers = {
 
     loginUser: async (_, { loginUserInput: { name, password } }) => {
       const user = await User.findOne({ name });
-    
+      
       if (user && (await bcrypt.compare(password, user.password))) {
         const token = jwt.sign(
           {

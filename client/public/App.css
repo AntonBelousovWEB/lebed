@@ -643,6 +643,10 @@ body::-webkit-scrollbar,
 .helloworldmyelem {
   padding: 10px 20px;
   border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   color: #fff;
   font-size: 15px;
   font-family: 'Montserrat', sans-serif;
@@ -662,4 +666,19 @@ body::-webkit-scrollbar,
 
 .progress_lvl::-webkit-progress-value {
   background-color: rgb(197, 255, 142);
+}
+
+.badges {
+  background-color: #393939;
+  border-radius: 5px;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
+}
+
+.badge {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 1px solid #000;
 }
