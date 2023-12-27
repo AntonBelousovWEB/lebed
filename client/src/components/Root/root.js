@@ -1,7 +1,7 @@
 import React from "react";
 import Paint from "../paint/paint";
 import { Auth } from '../Authentication/auth/auth'
-import { Reg } from "../Authentication/reg";
+import { Reg } from "../Authentication/reg/Reg";
 import { What } from "../UI/what/what";
 import Admin from "../Admin/Admin";
 import ErrorPage from "../UI/404"

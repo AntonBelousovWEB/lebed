@@ -10,15 +10,12 @@ const useEncryption = (receivedPublicKeyPem) => {
         console.error('Data is null or undefined');
         return;
       }
-
       const publicKey = forge.pki.publicKeyFromPem(receivedPublicKeyPem);
-      const encryptedData = publicKey.encrypt(data, 'RSA-OAEP');
       const encryptedId = publicKey.encrypt(JSON.stringify(reqId), 'RSA-OAEP');
       
       setReqId(prevId => prevId + 1);
 
       return {
-        data: forge.util.encode64(encryptedData),
         id: forge.util.encode64(encryptedId),
       };
     } catch (error) {

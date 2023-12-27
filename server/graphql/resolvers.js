@@ -59,9 +59,9 @@ const resolvers = {
   },
   Mutation: {
     registerUser: async (_, { registerUserInput: { name, password, color }, key }) => {
-      const decrypted = decryptData(key.secretKey, key.id);
+      const decrypted = decryptData(key.id);
       
-      if (parseInt(decrypted.decryptedData2, 10) !== parseInt(decrypted.id, 10)) {
+      if (parseInt(decrypted.decryptedData, 10) !== parseInt(decrypted.id, 10)) {
         throw new Error('Decrypted data mismatch!');
       }
 
@@ -98,15 +98,11 @@ const resolvers = {
       );
     
       createdUser.tokenJWT = token;
-      if(decrypted.decryptedData1 === secret_key) {
-        const res = await createdUser.save();
-        return {
-          id: res.id,
-          ...res._doc,
-        };
-      } else {
-        throw new Error(`Incorrect key!`);
-      }
+      const res = await createdUser.save();
+      return {
+        id: res.id,
+        ...res._doc,
+      };
     },    
 
     loginUser: async (_, { loginUserInput: { name, password } }) => {

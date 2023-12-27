@@ -8,20 +8,14 @@ const rsaPrivateKey = {
   passphrase: process.env.SECRET_PHRASE
 };
 
-const decryptData = (encryptedData1, encryptedData2) => {
-    const decryptedData1 = crypto.privateDecrypt(
+const decryptData = (encryptedData) => {
+    const decryptedData = crypto.privateDecrypt(
       rsaPrivateKey,
-      Buffer.from(encryptedData1, 'base64'),
-    ).toString('utf8');
-         
-    const decryptedData2 = crypto.privateDecrypt(
-      rsaPrivateKey,
-      Buffer.from(encryptedData2, 'base64'),
+      Buffer.from(encryptedData, 'base64'),
     ).toString('utf8');
            
     return {
-      decryptedData1,
-      decryptedData2,
+      decryptedData,
       id: reqId++
     };
 };  

@@ -1,6 +1,6 @@
 @import url(
 'https://fonts.googleapis.com/css2?family=Lobster&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 @import url(./reset.css);
 
 @keyframes op-to-bottom {
@@ -42,7 +42,7 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;    
-  background: url(./img/bg3.svg) no-repeat;
+  background: url(./img/bg.png) no-repeat;
   background-size: cover;
   min-height: 100vh;
 }
@@ -110,72 +110,105 @@ body::-webkit-scrollbar,
   background: rgba(255, 255, 255, 0.0);
 }
 
+.pickcolor_box {
+  background-color: #110B11;
+  padding: 30px 30px 2px 30px;
+  margin: 0 auto;
+  border-radius: 4px;
+}
+
+.step_box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.complete_reg {
+  background-color: #A7D0AB;
+  border-radius: 4px;
+  padding: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+}
+
 .box__colors {
   max-width: 600px;
   max-height: 400px;
   display: flex;
   flex-wrap: wrap;
-  padding: 30px;
-  margin: 0 auto;
   overflow-y: auto;
   gap: 20px;
-  background-color: #fff;
-  margin-top: 100px;
-  border-radius: 10px;
+  margin-top: 40px;
 }
 
 .registration__form {
   animation: op-to-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  margin: 0 auto;
 }
 
 .box__inputs,
 .box__inputs-sign {
-  background-color: #2d2c31;
+  background-color: #110B11;
   max-width: 600px;
-  margin: 0 auto;
-  border-radius: 10px;
-  padding: 0px 20px 0px 20px;
+  border-radius: 10px 0px 0px 10px;
+  padding: 0px 5px 0px 5px;
 }
 
-.box__inputs::after {
-  content: "";
-  position: absolute;
-  width: 10px;
-  height: 100px;
-  background: linear-gradient(0deg, rgba(255,255,255,1) 50%, rgba(45,44,49,1) 50%);
-  margin-left: 15.5%;
+.reg_title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: #fff;
+}
+
+.reg_desc {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 17px;
+  margin-top: 4px;
+}
+
+.wrapper_box {
+  display: flex;
 }
 
 .form__reg input {
-  background-color: rgb(233, 231, 231);
+  color: #fff;
   height: 40px;
   font-size: 18px;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 4px;
+  border-top: 0.5px solid #FFF;
+  border-right: 3px solid #FFF;
+  border-bottom: 0.5px solid #FFF;
+  border-left: 3px solid #FFF;
 }
 .reg__bttn {
-  background-color: rgb(86, 192, 53);
-  height: 50px;
-  border-radius: 5px;
+  background-color: #A7D0AB;
+  height: 100%;
+  width: 60px;
+  border-radius: 0px 5px 5px 0px;
   font-weight: 700;
-  padding: 0px 10%;
-  margin: 0 auto;
-  
+  position: relative;
 }
+
+.reg__bttn img {
+  transform: rotate(90deg);
+  width: 24px;
+  height: 24px;
+}
+
 .form__reg a {
   color: rgb(252, 255, 82);
-  margin: 0 auto;
-  margin-bottom: 20px;
   font-size: 15px;
 }
 .form__reg {
   font-family: 'Montserrat', sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   max-width: 400px;
-  margin: 0 auto;
-  margin-top: 20px;
+  padding: 40px;
 }
 .reg__page {
   height: 100vh;
@@ -184,6 +217,11 @@ body::-webkit-scrollbar,
   justify-content: center;
 }
 
+.text_sign-in {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Montserrat', sans-serif;
+}
 
 .box__pssword {
   position: relative;
@@ -197,8 +235,12 @@ body::-webkit-scrollbar,
 
 .box__color {
   border-radius: 5px;
-  background-color: rgb(199, 199, 199);
   padding: 10px;
+  flex-grow: 1;
+}
+
+.box__color:hover {
+  background-color: rgba(199, 199, 199, 0.15);
 }
 
 .button__view {

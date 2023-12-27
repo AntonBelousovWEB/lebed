@@ -85,7 +85,6 @@ module.exports = gql`
     }
 
     input KeyInput {
-        secretKey: String!
         id: String!
     }
 

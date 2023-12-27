@@ -10,7 +10,6 @@ export const Auth = () => {
     const [name, setName] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [error, setError] = React.useState("");
-    const [view, setView] = React.useState(false);
 
     const { login, user } = React.useContext(AuthContext);
     const navigate = useNavigate();
@@ -49,34 +48,44 @@ export const Auth = () => {
         <div className="reg__page">
             <div className="registration__form">
               <div className="Errors">{error.toString()}</div>
-              <div className="box__inputs-sign">
-                <form className="form__reg">
-                  <input 
-                    style={{
-                      marginTop: "20px"
-                    }} 
-                    type="text" 
-                    placeholder="name"
-                    onChange={e => setName(e.target.value)}
-                  />
-                  <div className="box__pssword">
-                    <input
-                      onChange={e => setPassword(e.target.value)}
-                      className="inpt__password"
-                      type={view ? "text" : "password"}
-                      placeholder="password"
+              <div className="wrapper_box">
+                <div className="box__inputs-sign">
+                  <form className="form__reg">
+                    <h2 className="reg_title">Sign in</h2>
+                    <input 
+                      style={{
+                        marginTop: "20px"
+                      }} 
+                      type="text" 
+                      placeholder="name"
+                      onChange={e => setName(e.target.value)}
                     />
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setView(!view);
-                      }}
-                      className="button__view"
-                    ></button>
-                  </div>
-                  <button onClick={(e) => loginUser(e)} className="reg__bttn">Sign in</button>
-                  <Link to="/">Registration</Link>
-                </form>
+                    <div className="box__pssword">
+                      <input
+                        onChange={e => setPassword(e.target.value)}
+                        className="inpt__password"
+                        type={"password"}
+                        placeholder="password"
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                        }}
+                        className="button__view"
+                      ></button>
+                    </div>
+                    <div style={{"display": "flex", "gap": "5px"}}>
+                      <h2 className="text_sign-in">Don't have account?</h2>
+                      <Link to="/">Registration</Link>
+                    </div>
+                  </form>
+                </div>
+                <div>
+                  <button 
+                    onClick={(e) => loginUser(e)}
+                    className="reg__bttn"
+                  ><img src="./img/chevron-double-up.svg" alt="" /></button>
+                </div>
               </div>
             </div>
         </div>

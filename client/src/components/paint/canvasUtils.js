@@ -1,52 +1,52 @@
 const wsPost = new WebSocket('ws://192.168.1.248:5000/upload');
 
 export function post(canvasRef, updateLvl, setError, user, curLvl, ePost) {
-    const postLogic = async () => {
-      const canvas = canvasRef.current;
-      const dataURL = canvas.toDataURL(0.1);
-  
-      const byteString = atob(dataURL.split(',')[1]);
-      const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-      const ab = new ArrayBuffer(byteString.length);
-      const ia = new Uint8Array(ab);
-      
-      for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-      }
-      
-      const blob = new Blob([ab], { type: mimeString });
-  
-      // const blobURL = URL.createObjectURL(blob);
-  
-      const formData = new FormData();
-      formData.append('image', blob);
+  const postLogic = async () => {
+    const canvas = canvasRef.current;
+    const dataURL = canvas.toDataURL(0.1);
 
-      const data = { 
-        user, 
-        position: {
-          ePost
-        }, 
-        dataURL 
-      };
-  
-      try {
-        wsPost.send(JSON.stringify(data));
-      } catch (error) {
-        console.error('Error uploading image:', error);
-      }
+    const byteString = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    
+    const blob = new Blob([ab], { type: mimeString });
 
-      // updateLvl({
-      //   variables: {
-      //     updateLvlUserInput: {
-      //       name: user.name,
-      //       level: Math.floor(curLvl) / (Math.floor(curLvl * curLvl) * 1000)
-      //     }
-      //   }
-      // }).catch((err) => {
-      //   setError(err.toString());
-      // });
+    // const blobURL = URL.createObjectURL(blob);
+
+    const formData = new FormData();
+    formData.append('image', blob);
+
+    const data = { 
+      user, 
+      position: {
+        ePost
+      }, 
+      dataURL 
     };
-    postLogic();
+
+    try {
+      wsPost.send(JSON.stringify(data));
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+
+    // updateLvl({
+    //   variables: {
+    //     updateLvlUserInput: {
+    //       name: user.name,
+    //       level: Math.floor(curLvl) / (Math.floor(curLvl * curLvl) * 1000)
+    //     }
+    //   }
+    // }).catch((err) => {
+    //   setError(err.toString());
+    // });
+  };
+  postLogic();
 }
 
 const wsGet = new WebSocket('ws://192.168.1.248:5000/download');
